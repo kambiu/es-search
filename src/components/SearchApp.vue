@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  name: 'Search',
+  name: 'SearchApp',
   props: {
     msg: String
   },
