@@ -1,18 +1,18 @@
 <template>
   <div id="app">    
-    <Search />
+    <SearchApp />
   </div>
 </template>
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
-import Search from './components/Search.vue'
+import SearchApp from './components/SearchApp.vue'
 
 export default {
   name: 'app',
   components: {
     HelloWorld,
-    Search
+    SearchApp
   }
 }
 </script>
