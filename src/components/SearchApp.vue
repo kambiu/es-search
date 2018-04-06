@@ -15,13 +15,19 @@
           </b-form>
         </b-col>
       </b-row>
+      <ResultContainer />
     </b-container>
   </div>
 </template>
 
 <script>
+import ResultContainer from './ResultContainer.vue'
+
 export default {
   name: 'SearchApp',
+  components: {
+    ResultContainer
+  },
   props: {
     msg: String
   },
