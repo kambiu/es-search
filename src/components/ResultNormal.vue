@@ -1,10 +1,14 @@
 <template>
   <div class="hello">
     <div class="single-result">
-      <b-row><b-col sm="8"><h5 class="title">{{ result.title }}</h5></b-col></b-row>
-      <b-row><b-col sm="8"><p class="link">{{ result.link }}</p></b-col></b-row>
-      <b-row><b-col sm="8"><p class="summary">{{ result.summary }}</p></b-col></b-row>
-      <b-row><b-col sm="8"><p class="meta">Date: {{ result.date | unix2localtime }}</p></b-col></b-row>
+      <b-row>
+        <b-col sm="8" class="my-0">
+          <div class="title">{{ result.title }}</div>
+          <div class="link">{{ result.link }}</div>
+          <div class="summary" v-html="result.summary"></div>
+          <div class="meta">Date: {{ result.date | unix2localtime }}</div>
+        </b-col>
+      </b-row>
     </div>
   </div>
 </template>
@@ -18,6 +22,9 @@ export default {
       var date = new Date(parseInt(value)*1000);
       return date.toLocaleDateString() + " " + date.toLocaleTimeString()
     }
+  },
+  created: function () {
+    console.log(this.result)
   }
 }
 </script>
@@ -25,23 +32,23 @@ export default {
 <style scoped>
 
 .link {
+  font-size: 14px;
   color: #006621;
 }
 
 .title {
+  font-size: 18px;
   color: #1a0dab;
 }
 
 .summary {
+  font-size: small;
   color: #545454;
 }
 
 .meta {
-  color: #609;
+  font-size: small;
+  color: #1a0dab;
 }
 
-strong {
-  font-weight: bold;
-  color: red;
-}
 </style>
