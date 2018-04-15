@@ -2,11 +2,17 @@
   <div class="search-container">
     <b-container>
       <b-row align-h="center" align-v="center" class="search_input">
-        <AdvanceSearch />
+        <b-col md="10">
+          <AdvanceSearch v-on:showResultPanel="toggleResult($event)" />
+        </b-col>
       </b-row>
-      <b-row align-h="center" align-v="center" class="search_result">
-        <ResultContainer />
-      </b-row>
+      <transition name="fade">
+        <b-row align-h="center" align-v="center" class="search_result" v-if="show_result">
+          <b-col md="10">
+            <ResultContainer />
+          </b-col>
+        </b-row>
+      </transition>
     </b-container>
   </div>
 </template>
@@ -20,7 +26,20 @@ export default {
   components: {
     ResultContainer,
     AdvanceSearch
+  },
+  data() {
+    return {
+      show_result: false,
+    }
+  },
+  methods: {
+    toggleResult: function(event){
+      console.log(event);
+      this.show_result = true;
+      
+    }
   }
+
 }
 </script>
 
@@ -30,6 +49,13 @@ export default {
 strong {
   color: #dd4b39 !important;
   font-weight: bold;  
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 
 </style>

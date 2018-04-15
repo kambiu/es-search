@@ -1,9 +1,6 @@
 <template>
-  <div class="hello">
-    <b-col md="8">
-      <p>--------------------------</p>
+  <div>
       <ResultNormal v-bind:result="singleresult"></ResultNormal>
-    </b-col>
   </div>
 </template>
 
