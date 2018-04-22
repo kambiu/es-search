@@ -9,7 +9,7 @@
       <transition name="fade">
         <b-row align-h="center" align-v="center" class="search_result" v-if="show_result">
           <b-col md="10">
-            <ResultContainer />
+            <ResultContainer :searchHistory="list_search_history" />
           </b-col>
         </b-row>
       </transition>
@@ -30,14 +30,23 @@ export default {
   data() {
     return {
       show_result: false,
+      list_search_history: [
+        "Cras justo odio", "Dapibus ac facilisis in", "Morbi leo risus", "Porta ac consectetur ac", "Vestibulum at eros"
+      ],
     }
   },
   methods: {
     handleSearch: function(event){
       if (event == "adv") {
+        /* call advanced search*/
         this.show_result = false;
+
       } else {
+        /* submit search*/
         this.show_result = true;
+        var text = event.text;
+        this.list_search_history.unshift(text);    
+        this.list_search_history = this.list_search_history.slice(0, 5);
       }    
     }
   }

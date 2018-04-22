@@ -9,7 +9,7 @@
         <div>Search History:</div>
         <div>
           <b-list-group class="listGrp">
-            <b-list-group-item v-for="(item, index) in search_history" :key="index" class="listSearchHistory" href="#">{{index}} {{item}}</b-list-group-item>
+            <b-list-group-item v-for="(item, index) in searchHistory" :key="index" class="listSearchHistory" href="#">{{item}}</b-list-group-item>
           </b-list-group>
         </div>
       </b-col>
@@ -27,9 +27,9 @@ export default {
   name: 'ResultContainer',
   data() {
     return {
+      // the following will be in props later
       response_time: "0.01",
-      response_hits: "5",
-      search_history: ["Cras justo odio", "Dapibus ac facilisis in", "Morbi leo risus", "Porta ac consectetur ac", "Vestibulum at eros"],
+      response_hits: "5",      
       allresults : [
         {
           title: "Android One Moto X4",
@@ -64,19 +64,20 @@ export default {
       ]
     }
   },
+  props: [
+    "searchHistory"
+  ],    
   components: {
     ResultNormal,
     ResponseInfo
   },
   methods: {
     hoverList: function(evt) {
-      console.log("hoverList");
       if (!evt) {
         evt = window.event; 
       }
-
+      
       var el = (event.target || event.srcElement);
-      console.log(el);
       el.setAttribute('active', "");
     }
   }

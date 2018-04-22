@@ -51,11 +51,9 @@ export default {
   methods: {
     onSubmit(evt) {
       evt.preventDefault();
-      console.log(JSON.stringify(this.request.text));
-      this.$emit("eSearchAction", "submit");      
+      this.$emit("eSearchAction", this.request);      
     },
     onAdvacnedOption: function() {
-      console.log("onAdvacnedOption");
       this.$emit("eSearchAction", "adv");      
     }
   }
