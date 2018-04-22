@@ -1,15 +1,9 @@
 <template>
-  <div class="hello">
-    <div class="single-result">
-      <b-row>
-        <b-col sm="8" class="my-0">
-          <div class="title">{{ result.title }}</div>
-          <div class="link">{{ result.link }}</div>
-          <div class="summary" v-html="result.summary"></div>
-          <div class="meta">Date: {{ result.date | unix2localtime }}</div>
-        </b-col>
-      </b-row>
-    </div>
+  <div class="single-result">
+    <div><a v-bind:href="result.link" class="title">{{ result.title }}</a></div>
+    <div class="link">{{ result.link }}</div>
+    <div class="summary" v-html="result.summary"></div>
+    <div class="meta">Date: {{ result.date | unix2localtime }}</div>
   </div>
 </template>
 
@@ -51,4 +45,7 @@ export default {
   color: #1a0dab;
 }
 
+.single-result {
+  margin: 15px;
+}
 </style>

@@ -1,9 +1,9 @@
 <template>
   <div class="search-container">
-    <b-container>
+    <b-container fluid>
       <b-row align-h="center" align-v="center" class="search_input">
         <b-col md="10">
-          <AdvanceSearch v-on:showResultPanel="toggleResult($event)" />
+          <AdvanceSearch @eSearchAction="handleSearch($event)" />
         </b-col>
       </b-row>
       <transition name="fade">
@@ -33,10 +33,12 @@ export default {
     }
   },
   methods: {
-    toggleResult: function(event){
-      console.log(event);
-      this.show_result = true;
-      
+    handleSearch: function(event){
+      if (event == "adv") {
+        this.show_result = false;
+      } else {
+        this.show_result = true;
+      }    
     }
   }
 
