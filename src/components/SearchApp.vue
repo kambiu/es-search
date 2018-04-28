@@ -4,6 +4,7 @@
       <b-row align-h="center" align-v="center" class="search_input">
         <b-col md="10">
           <AdvanceSearch @eSearchAction="handleSearch($event)" />
+          <BasicSearch @eSearchAction="handleSearch($event)" />          
         </b-col>
       </b-row>
       <transition name="fade">
@@ -20,12 +21,14 @@
 <script>
 import ResultContainer from './ResultContainer.vue'
 import AdvanceSearch from './AdvanceSearch.vue'
+import BasicSearch from './BasicSearch.vue'
 
 export default {
   name: 'SearchApp',
   components: {
     ResultContainer,
-    AdvanceSearch
+    AdvanceSearch,
+    BasicSearch
   },
   data() {
     return {
