@@ -3,12 +3,12 @@
     <b-container fluid>
       <b-row align-h="center" align-v="center" class="search_input">
         <b-col md="10">
-          <AdvanceSearch @eSearchAction="handleSearch($event)" />
-          <BasicSearch @eSearchAction="handleSearch($event)" />          
+          <AdvanceSearch v-show="show_advanced_page" @eSearchAction="handleSearch($event)" />
+          <BasicSearch v-show="show_basic_page"  @eSearchAction="handleSearch($event)" />          
         </b-col>
       </b-row>
       <transition name="fade">
-        <b-row align-h="center" align-v="center" class="search_result" v-if="show_result">
+        <b-row align-h="center" align-v="center" class="search_result" v-if="show_result_page">
           <b-col md="10">
             <ResultContainer :searchHistory="list_search_history" />
           </b-col>
@@ -32,7 +32,9 @@ export default {
   },
   data() {
     return {
-      show_result: false,
+      show_basic_page: true,
+      show_result_page: false,
+      show_advanced_page: false,
       list_search_history: [
         "Cras justo odio", "Dapibus ac facilisis in", "Morbi leo risus", "Porta ac consectetur ac", "Vestibulum at eros"
       ],
@@ -42,11 +44,12 @@ export default {
     handleSearch: function(event){
       if (event == "adv") {
         /* call advanced search*/
-        this.show_result = false;
-
+        this.show_result_page = false;
+        this.show_basic_page = false;
+        this.show_advanced_page = true;
       } else {
         /* submit search*/
-        this.show_result = true;
+        this.show_result_page = true;
         var text = event.text;
         this.list_search_history.unshift(text);    
         this.list_search_history = this.list_search_history.slice(0, 5);
