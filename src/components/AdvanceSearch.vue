@@ -49,7 +49,7 @@
 
           <b-form-group horizontal label="File size:" label-class="text-md-left">
                 <b-input-group :prepend="request.file_size.gt_text" class="file_size_grp_magrin">
-                  <b-form-input autocomplete="off"></b-form-input>
+                  <b-form-input autocomplete="off" v-model="request.file_size.greater_than"></b-form-input>
                   <b-input-group-append>
                     <b-btn id="gt_kb" variant="outline-success" v-on:click="change_file_size">KB</b-btn>
                     <b-btn id="gt_mb" variant="outline-info" v-on:click="change_file_size">MB</b-btn>
@@ -57,7 +57,7 @@
                 </b-input-group>
 
                 <b-input-group :prepend="request.file_size.lt_text" class="file_size_grp_magrin">
-                  <b-form-input autocomplete="off"></b-form-input>
+                  <b-form-input autocomplete="off" v-model="request.file_size.less_than"></b-form-input>
                   <b-input-group-append>
                     <b-btn id="lt_kb" variant="outline-success" v-on:click="change_file_size">KB</b-btn>
                     <b-btn id="lt_mb" variant="outline-info" v-on:click="change_file_size">MB</b-btn>

@@ -9,11 +9,19 @@
         <div>Search History:</div>
         <div>
           <b-list-group class="listGrp">
-            <b-list-group-item v-for="(item, index) in searchHistory" :key="index" class="listSearchHistory" href="#">{{item}}</b-list-group-item>
+            <b-list-group-item v-for="(item, index) in searchHistory" :key="index" v-on:click="submitSearch(item)"
+            class="listSearchHistory" href="#">{{item}}</b-list-group-item>
           </b-list-group>
         </div>
       </b-col>
     </b-row>
+    <b-row align-h="center" id="pageNavigation">
+      <!--<b-pagination-nav :link-gen="linkGen" :number-of-pages="10" v-model="currentPage" />-->
+      <b-pagination-nav base-url="#" :limit="8" :number-of-pages="10" v-model="currentPage" v-on:click="linkGen" 
+      first-text="First" prev-text="Previous" next-text="Next" last-text="Last"/>
+    </b-row>
+    
+
 
   </div>
 </template>
@@ -28,6 +36,7 @@ export default {
   data() {
     return {
       // the following will be in props later
+      currentPage: 1,
       response_time: "0.01",
       response_hits: "5",      
       allresults : [
@@ -79,6 +88,16 @@ export default {
       
       var el = (event.target || event.srcElement);
       el.setAttribute('active', "");
+    },
+
+    linkGen: function (evt) {
+      console.log("Current page: " + this.currentPage);
+      console.log(evt);
+      //console.log("this is page: " + pageNum);
+    },
+    submitSearch: function(text_history) {
+
+      this.$emit("eSearchAction", {text: text_history});
     }
   }
 }
@@ -91,5 +110,9 @@ export default {
 .listSearchHistory:hover {
   background-color: #007bff;
   color: white;
+}
+
+#pageNavigation {
+  margin-top: 20px;
 }
 </style>

@@ -1,33 +1,45 @@
 <template>
   <div class="basic-search-container">    
-    <b-form @submit="onSubmit">
-      <b-row>
-        <b-col md="9">
-          <b-form-input 
-            id="input_text" class="el_form_input" v-model="request.text" 
+    <b-row>
+      <b-input-group size="lg">
+        <b-form-input id="input_text" class="el_form_input" v-model="request.text" 
             autocomplete="off" placeholder="Enter some words" size="lg" required />
-        </b-col>
-        <b-col md="3">
-          <b-row>
-            <b-col md="6">
-              <b-button type="submit" class="el_form_input" variant="primary" size="lg">Submit</b-button> 
-            </b-col>
-            <b-col md="6">
-              <a href="#" v-on:click="onAdvacnedOption()">Advanced Options</a>
-            </b-col>
-          </b-row>
-        </b-col>  
-      </b-row>
-      <b-row id="trending_search">
-        <b-col md="2">Trending Now:
-        </b-col>    
-        <b-col md="1" v-for="item in trends" :key="item">
-          <a href="#">{{item}}</a>
-        </b-col>        
-      </b-row>
-    </b-form>  
-    
+        <b-input-group-append>
+
+          <b-btn v-on:click="onSubmit" class="transparent">
+            <img src="../assets/images/search.png" alt="search" height="32" width="32" />
+          </b-btn>
+
+        </b-input-group-append>
+      </b-input-group>
+    </b-row>
+
+    <b-row id="trending_search">
+      Trending Now:
+      <a class="trend" href="#" v-for="item in trends" :key="item" v-on:click="onSubmit(item)" >{{ item }}</a>
+      <!--
+      <b-col md="2">Trending Now:
+      </b-col>    
+      <b-col md="1" v-for="item in trends" :key="item">
+        <a href="#">{{item}}</a>
+      </b-col>        
+      -->
+    </b-row>
+
+    <!-- 
+    <b-navbar toggleable="md" variant="light">
+      <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+      <b-navbar-brand href="#">Trending Now</b-navbar-brand>
+      <b-collapse is-nav id="nav_collapse">
+        <b-navbar-nav>
+          <b-nav-item href="#" v-for="item in trends" :key="item">{{item}}</b-nav-item>
+        </b-navbar-nav>
+      </b-collapse>
+    </b-navbar>   
+    --> 
+
   </div>
+ 
 </template>
 
 <script>
@@ -49,8 +61,10 @@ export default {
     }
   },
   methods: {
-    onSubmit(evt) {
-      evt.preventDefault();
+    onSubmit: function(submit_text) {
+      if (typeof submit_text === 'string' || submit_text instanceof String){
+        this.request.text=submit_text;
+      }
       this.$emit("eSearchAction", this.request);      
     },
     onAdvacnedOption: function() {
@@ -73,6 +87,14 @@ export default {
 
 .input_text {
   margin-top: 10px;
+}
+.trend{
+  margin-left: 20px;
+}
+
+#trending_search {
+  margin-top: 10px;
+  margin-left: 0px;
 }
 
 </style>

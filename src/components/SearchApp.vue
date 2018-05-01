@@ -10,7 +10,7 @@
       <transition name="fade">
         <b-row align-h="center" align-v="center" class="search_result" v-if="show_result_page">
           <b-col md="10">
-            <ResultContainer :searchHistory="list_search_history" />
+            <ResultContainer :searchHistory="list_search_history" @eSearchAction="handleSearch($event)" />
           </b-col>
         </b-row>
       </transition>
@@ -50,9 +50,19 @@ export default {
       } else {
         /* submit search*/
         this.show_result_page = true;
-        var text = event.text;
-        this.list_search_history.unshift(text);    
-        this.list_search_history = this.list_search_history.slice(0, 5);
+        console.log(event)
+        if (event.text) {
+          // basic search
+          var text = event.text
+          console.log(text);
+          this.list_search_history.unshift(text);    
+          this.list_search_history = this.list_search_history.slice(0, 5);  
+        } else {
+          //advanced search
+          console.log("This is adv search");
+          console.log(event);
+        }
+     
       }    
     }
   }
@@ -73,6 +83,11 @@ strong {
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+
+.transparent {
+  background-color: rgba(0, 0, 0, 0);
+  border-color: rgba(0, 0, 0, 0.2);
 }
 
 </style>
