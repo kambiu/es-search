@@ -22,6 +22,7 @@
 import ResultContainer from './ResultContainer.vue'
 import AdvanceSearch from './AdvanceSearch.vue'
 import BasicSearch from './BasicSearch.vue'
+import esclient from '../utils/ESHelper.js'
 
 export default {
   name: 'SearchApp',
@@ -55,8 +56,19 @@ export default {
           // basic search
           var text = event.text
           console.log(text);
+          //updat ehistory
           this.list_search_history.unshift(text);    
-          this.list_search_history = this.list_search_history.slice(0, 5);  
+          this.list_search_history = this.list_search_history.slice(0, 5);
+
+          // submit text to elatsicsearch
+          esclient.search({
+            q: text
+          }).then(function (body) {
+            var hits = body.hits.hits;
+            console.log(hits);
+          }, function (error) {
+            console.trace(error.message);
+          });
         } else {
           //advanced search
           console.log("This is adv search");
