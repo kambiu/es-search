@@ -1,9 +1,13 @@
 <template>
   <div class="single-result">
-    <div><a v-bind:href="result.link" class="title">{{ result.title }}</a></div>
-    <div class="link">{{ result.link }}</div>
-    <div class="summary" v-html="result.summary"></div>
-    <div class="meta">Date: {{ result.date | unix2localtime }}</div>
+    <div><a v-bind:href="result._id" class="title">{{ result._id }}</a></div>
+    <div class="link">{{ result._id | build_link }}</div>
+    <div class="summary" v-html="joinHighlight(result.highlight.content)"></div>
+    <div class="meta">
+      <span>Date: {{ result._source.date_modified }}</span>&nbsp;&nbsp;&nbsp;
+      <span>Active: {{ result._source.active }}</span>
+    </div>
+    <!-- <div class="meta">Date: {{ result.date | unix2localtime }}</div>-->
   </div>
 </template>
 
@@ -15,6 +19,14 @@ export default {
     unix2localtime: function(value){
       var date = new Date(parseInt(value)*1000);
       return date.toLocaleDateString() + " " + date.toLocaleTimeString()
+    },
+    build_link: function(value){
+      return "http://localhost/searchapp?ref=" + value;
+    }
+  },
+  methods: {
+    joinHighlight: function(value){
+      return value.join(" ");
     }
   },
   created: function () {

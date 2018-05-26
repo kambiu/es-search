@@ -2,8 +2,8 @@
   <div>
     <b-row>
       <b-col sm="8" class="my-0">
-        <ResponseInfo :time="results" :hits="response_hits" />
-        <ResultNormal v-for="item in allresults" :result="item" :key="item.title" />
+        <ResponseInfo :time="searchResults.took" :hits="searchResults.hits.total" />
+        <ResultNormal v-for="item in searchResults.hits.hits" :result="item" :key="item._id" />
       </b-col>
       <b-col sm="3" class="my-0">
         <div>Search History:</div>
@@ -37,7 +37,7 @@ export default {
     return {
       // the following will be in props later
       currentPage: 1,
-      response_time: this.results,
+      //response_time: this.searchResults,
       // response_time: this.results.took,
       response_hits: "5",      
       allresults : [
@@ -76,7 +76,7 @@ export default {
   },
   props: [
     "searchHistory",
-    "results"
+    "searchResults"
   ],    
   components: {
     ResultNormal,
@@ -99,12 +99,14 @@ export default {
     },
     submitSearch: function(text_history) {
       this.$emit("eSearchAction", {text: text_history});
-    },
-    created: function () {
-      // `this` points to the vm instance
-      console.log("created-----------------------------");
-      console.log("created: " + this.results);
     }
+  },
+  created: function () {
+    // `this` points to the vm instance
+    console.log("created-----------------------------");
+    console.log("created-----------------------------");
+    console.log("created results: " + this.searchResults);
+    console.log("created history: " + this.searchHistory);
   }
 }
 

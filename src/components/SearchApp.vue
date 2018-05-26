@@ -10,7 +10,7 @@
       <transition name="fade">
         <b-row align-h="center" align-v="center" class="search_result" v-if="show_result_page">
           <b-col md="10">
-            <ResultContainer :searchHistory="list_search_history" :results="results" @eSearchAction="handleSearch($event)" />
+            <ResultContainer :searchHistory="list_search_history" :searchResults="search_results" @eSearchAction="handleSearch($event)" />
           </b-col>
         </b-row>
       </transition>
@@ -39,7 +39,7 @@ export default {
       list_search_history: [
         "Cras justo odio", "Dapibus ac facilisis in", "Morbi leo risus", "Porta ac consectetur ac", "Vestibulum at eros"
       ],
-      results: 0.1111
+      search_results: null
     }
   },
   methods: {
@@ -55,10 +55,10 @@ export default {
         var is_basic_search = (event.text ? true : false);
 
         // update search history
-        
-        if (is_basic_search) {
-          this.updateSearchHistory() 
-        }
+        this.updateSearchHistory(is_basic_search, event) 
+        // if (is_basic_search) {
+        //   this.updateSearchHistory() 
+        // }
 
         // load result
         this.parseQueryLoadResult(is_basic_search, event);
@@ -66,15 +66,14 @@ export default {
         // load aggregation
         // ...
 
-        // toggle component display
-        this.show_result_page = true;
+        
       }    
     },
-    updateSearchHistory: function(query){
-      var text = query.text
-      console.log(text);
+    updateSearchHistory: function(is_basic_search, query){
+      var text_submitted = (is_basic_search ? query.text : query.text_or);
+      console.log(text_submitted);
       //updat ehistory
-      this.list_search_history.unshift(text);    
+      this.list_search_history.unshift(text_submitted);    
       this.list_search_history = this.list_search_history.slice(0, 5);          
     },
 
@@ -144,6 +143,8 @@ export default {
       console.log(q_query);
       //TODO show filter panel on aggregation?
       console.log("Submitting search  -------------------->>");
+
+      var me = this; /* important , callback functino cannot access to this variable*/
       esclient.search({
         index: q_index,
         body: {
@@ -154,12 +155,16 @@ export default {
           highlight: q_highlight,
           sort: q_sort
         }
-      }).then(function (body) {
-        console.log(body);
-        this.results = 111;
+      }).then(function (body) {        
+        me.search_results = body;
+         // toggle component display
+        me.show_result_page = true;
       }, function (error) {
         console.trace(error.message);
+        console.log(">>>>>>>>>>>>>>>>> Error made <<<<<<<<<<<<<<<<<<");
       });
+
+      console.log("end parseAndSendQuery ---------------");
     }
   }
 
@@ -169,7 +174,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 
-strong {
+strong, em{
   color: #dd4b39 !important;
   font-weight: bold;  
 }
