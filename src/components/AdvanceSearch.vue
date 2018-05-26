@@ -35,8 +35,22 @@
           </b-form-group>
 
           <b-form-group horizontal label="Date:" label-class="text-md" label-for="input_date">
-            <b-form-input id="input_date" class="el_form_input" autocomplete="off" type="date" size="md"
-                v-model="request.date"  />
+            <b-row id="input_date">
+              <b-col md="1">
+                <span>From:</span>
+              </b-col>
+              <b-col md="5">
+                <b-form-input id="input_date_from" class="el_form_input" autocomplete="off" type="date" size="md"
+                    v-model="request.date.from"  />
+              </b-col>
+              <b-col md="1">
+                <span>To:</span>
+              </b-col>
+              <b-col md="5">
+                <b-form-input id="input_date_to" class="el_form_input" autocomplete="off" type="date" size="md"
+                    v-model="request.date.to"  />
+              </b-col>
+            </b-row>             
           </b-form-group>
 
           <b-form-group horizontal label="Results per page:" label-class="text-md-left" label-for="num_results">
@@ -118,7 +132,10 @@ export default {
         text_exact: null,
         // date
         scope: "all",
-        date: null,  
+        date: {
+          from: null,
+          to: null
+        },  
         max_results: 10,      
         // file metadata
         file_type: "all",
@@ -129,7 +146,7 @@ export default {
           lt_text: "Less than (KB)"
         },
         // other filters
-        repository: []
+        repository: ["cake", "staff", "student"]
       },
       trends: [
         "111", "222", "333"

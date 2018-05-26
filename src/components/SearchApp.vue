@@ -10,7 +10,7 @@
       <transition name="fade">
         <b-row align-h="center" align-v="center" class="search_result" v-if="show_result_page">
           <b-col md="10">
-            <ResultContainer :searchHistory="list_search_history" @eSearchAction="handleSearch($event)" />
+            <ResultContainer :searchHistory="list_search_history" :results="results" @eSearchAction="handleSearch($event)" />
           </b-col>
         </b-row>
       </transition>
@@ -39,6 +39,7 @@ export default {
       list_search_history: [
         "Cras justo odio", "Dapibus ac facilisis in", "Morbi leo risus", "Porta ac consectetur ac", "Vestibulum at eros"
       ],
+      results: 0.1111
     }
   },
   methods: {
@@ -50,32 +51,115 @@ export default {
         this.show_advanced_page = true;
       } else {
         /* submit search*/
-        this.show_result_page = true;
-        console.log(event)
-        if (event.text) {
-          // basic search
-          var text = event.text
-          console.log(text);
-          //updat ehistory
-          this.list_search_history.unshift(text);    
-          this.list_search_history = this.list_search_history.slice(0, 5);
 
-          // submit text to elatsicsearch
-          esclient.search({
-            q: text
-          }).then(function (body) {
-            var hits = body.hits.hits;
-            console.log(hits);
-          }, function (error) {
-            console.trace(error.message);
-          });
-        } else {
-          //advanced search
-          console.log("This is adv search");
-          console.log(event);
+        var is_basic_search = (event.text ? true : false);
+
+        // update search history
+        
+        if (is_basic_search) {
+          this.updateSearchHistory() 
         }
-     
+
+        // load result
+        this.parseQueryLoadResult(is_basic_search, event);
+
+        // load aggregation
+        // ...
+
+        // toggle component display
+        this.show_result_page = true;
       }    
+    },
+    updateSearchHistory: function(query){
+      var text = query.text
+      console.log(text);
+      //updat ehistory
+      this.list_search_history.unshift(text);    
+      this.list_search_history = this.list_search_history.slice(0, 5);          
+    },
+
+    parseQueryLoadResult: function(is_basic_search, query){
+      // submit text to elatsicsearch
+
+      /* require attributes
+        text basic
+        any
+        not
+        exact
+        none
+        from size
+        print fields
+        sort by
+        fieldtext condition
+        aggregation condition
+
+      */
+      console.log("parseAndSendQuery------");
+      console.log(query);
+      
+      /* define must need filed */
+      var q_from = 0; //TODO pagingation
+      var q_size = 10;
+      var q_source = {excludes: ["content"] };
+      var q_highlight = {
+        fields: { content: {} }
+      };
+      var q_sort = "_score";
+      var q_query = null;
+      // var q_scope = "";
+      var q_index = "*";
+
+      if (is_basic_search) {
+        console.log("basic query");
+         q_query = {
+          match: {
+            content: query.text
+          }
+        }
+      } else {
+        console.log("advacned query");
+        q_from = 0;
+        q_size = query.max_results;
+        //TODO
+        // q_scope = query.scope;
+        q_index = query.repository;
+        // TODO meta
+        // scope: "all",
+        // date: {
+        //   from: null,
+        //   to: null
+        // },  
+
+        q_query = {
+          match: {
+            content: query.text_or
+          }
+          // text_or: null,
+          // text_and: null,
+          // text_not: null,
+          // text_exact: null,
+        }
+      }
+
+      console.log(q_query);
+      //TODO show filter panel on aggregation?
+      console.log("Submitting search  -------------------->>");
+      esclient.search({
+        index: q_index,
+        body: {
+          from: q_from, 
+          size: q_size,
+          _source: q_source,
+          query: q_query,
+          highlight: q_highlight,
+          sort: q_sort
+        }
+      }).then(function (body) {
+        console.log(body);
+        this.results = 111;
+      }, function (error) {
+        console.trace(error.message);
+      });
     }
   }
 

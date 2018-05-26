@@ -2,7 +2,7 @@
   <div>
     <b-row>
       <b-col sm="8" class="my-0">
-        <ResponseInfo :time="response_time" :hits="response_hits" />
+        <ResponseInfo :time="results" :hits="response_hits" />
         <ResultNormal v-for="item in allresults" :result="item" :key="item.title" />
       </b-col>
       <b-col sm="3" class="my-0">
@@ -37,7 +37,8 @@ export default {
     return {
       // the following will be in props later
       currentPage: 1,
-      response_time: "0.01",
+      response_time: this.results,
+      // response_time: this.results.took,
       response_hits: "5",      
       allresults : [
         {
@@ -74,7 +75,8 @@ export default {
     }
   },
   props: [
-    "searchHistory"
+    "searchHistory",
+    "results"
   ],    
   components: {
     ResultNormal,
@@ -96,8 +98,12 @@ export default {
       //console.log("this is page: " + pageNum);
     },
     submitSearch: function(text_history) {
-
       this.$emit("eSearchAction", {text: text_history});
+    },
+    created: function () {
+      // `this` points to the vm instance
+      console.log("created-----------------------------");
+      console.log("created: " + this.results);
     }
   }
 }

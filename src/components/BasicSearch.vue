@@ -14,16 +14,15 @@
       </b-input-group>
     </b-row>
 
-    <b-row id="trending_search">
-      Trending Now:
-      <a class="trend" href="#" v-for="item in trends" :key="item" v-on:click="onSubmit(item)" >{{ item }}</a>
-      <!--
-      <b-col md="2">Trending Now:
-      </b-col>    
-      <b-col md="1" v-for="item in trends" :key="item">
-        <a href="#">{{item}}</a>
-      </b-col>        
-      -->
+    <b-row id="search_options" align-h="between">
+      <b-col>
+        Trending Now:
+        <a class="trend" href="#" v-for="item in trends" :key="item" v-on:click="onSubmit(item)" >{{ item }}</a>
+      </b-col>
+      <b-col>
+        <div id="opt_adv_search"><a href="#" v-on:click="onAdvacnedOption()">More Option...</a></div>
+      </b-col>
+      
     </b-row>
 
     <!-- 
@@ -92,9 +91,13 @@ export default {
   margin-left: 20px;
 }
 
-#trending_search {
+#search_options {
   margin-top: 10px;
   margin-left: 0px;
+}
+
+#opt_adv_search {
+  text-align: right;
 }
 
 </style>
