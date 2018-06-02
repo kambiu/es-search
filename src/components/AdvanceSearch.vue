@@ -161,13 +161,13 @@ export default {
     },
     onReset(evt){
         evt.preventDefault();
-        console.log("reset");
         this.request.text_or = null;
         this.request.text_and = null;
         this.request.text_not = null;
         this.request.text_exact = null;
         this.request.scope = "All";
-        this.request.date = null;
+        this.request.date.from = null;
+        this.request.date.to = null;
         this.request.max_results = 10;
         this.request.file_type = "all";
         this.request.file_size.greater_than = null;

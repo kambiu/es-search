@@ -130,14 +130,75 @@ export default {
         // },  
 
         q_query = {
-          match: {
-            content: query.text_or
+          bool: {
+            must: [],
+            must_not: []
           }
-          // text_or: null,
-          // text_and: null,
-          // text_not: null,
-          // text_exact: null,
         }
+
+        if (query.text_or) {
+          q_query.bool.must.push(
+            {
+              match: { content: query.text_or } 
+            }
+          )
+        } 
+
+        if (query.text_and) {
+          q_query.bool.must.push(
+            {
+              match: { 
+                content: {
+                  query: query.text_and, 
+                  operator: "and"
+                }
+              }
+            }
+          )
+        } 
+
+        if(query.text_exact){
+          q_query.bool.must.push(
+            { 
+              match_phrase: { content: query.text_exact }
+            }
+          )
+        } 
+
+        if(query.text_not){
+          q_query.bool.must_not.push(
+            {
+              match: { content: query.text_not }
+            }
+          )
+        }
+
+        // q_query = {
+        //   bool: {
+        //     must: [
+        //       { 
+        //         match: { content: query.text_or } 
+        //       },
+        //       { 
+        //         match: { 
+        //           content: {
+        //             query: query.text_and,
+        //             operator: "and"
+        //           }                  
+        //         } 
+        //       },
+        //       { 
+        //         match_phrase: { content: query.text_exact } 
+        //       }
+        //     ]
+        //     ,
+        //     must_not: {
+        //       match: {
+        //         content: query.text_not
+        //       }
+        //     }            
+        //   }
+        // }
       }
 
       console.log(q_query);
