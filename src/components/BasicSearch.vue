@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import ns from '../utils/NameSpace.js'
 
 export default {
   name: 'BasicSearch',
@@ -64,10 +65,10 @@ export default {
       if (typeof submit_text === 'string' || submit_text instanceof String){
         this.request.text=submit_text;
       }
-      this.$emit("eSearchAction", this.request);      
+      this.$emit("action", {action: ns.basicAction.search, query: this.request});
     },
     onAdvacnedOption: function() {
-      this.$emit("eSearchAction", "adv");      
+      this.$emit("action", {action: ns.basicAction.showAdvancedPage});
     }
   }
 }

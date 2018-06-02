@@ -103,6 +103,7 @@
 </template>
 
 <script>
+import ns from '../utils/NameSpace.js'
 
 export default {
   name: 'AdvanceSearch',
@@ -157,7 +158,8 @@ export default {
     onSubmit(evt) {
       evt.preventDefault();
       console.log( this.request)
-      this.$emit("eSearchAction", this.request);      
+      // this.$emit("action", this.request);      
+      this.$emit("action", {action: ns.advancedAction.search, query: this.request});
     },
     onReset(evt){
         evt.preventDefault();
@@ -175,7 +177,9 @@ export default {
         this.request.repository = []
     },
     onAdvacnedOption: function() {
-      this.$emit("eSearchAction", "adv");      
+      // functino wihtout usage ?? TODO
+      // this.$emit("action", "adv");
+      // this.$emit("action", {action: ns.advancedAction.search});
     },
     change_file_size: function (evt){
       if (evt.target.id == "gt_kb"){
