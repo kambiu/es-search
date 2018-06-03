@@ -15,10 +15,17 @@
         </div>
       </b-col>
     </b-row>
+    <button class="hidden" v-on:click="debug">Debug</button>
     <b-row align-h="center" id="pageNavigation">
       <!--<b-pagination-nav :link-gen="linkGen" :number-of-pages="10" v-model="currentPage" />-->
-      <b-pagination-nav base-url="#" :limit="10" :number-of-pages="numPage" v-model="currentPage" 
-        v-on:input="pageSearch(currentPage)" next-text="Next"/>
+      <b-pagination-nav 
+        base-url="#" 
+        :limit="10" 
+        :number-of-pages="numPage" 
+        v-show="searchResults.hits.total != 0"
+        v-model="currentPage" 
+        v-on:input="pageSearch(currentPage)" 
+        next-text="Next" />
     </b-row>
   </div>
 </template>
@@ -33,20 +40,29 @@ export default {
   name: 'ResultContainer',
   data() {
     return {
-      // the following will be in props later
-      numPage: 12,
       currentPage: 1
+    }
+  },
+  computed: {
+    numPage: function() {
+      return Math.ceil(this.searchResults.hits.total * 1.0 / this.pageSize);
     }
   },
   props: [
     "searchHistory",
-    "searchResults"
+    "searchResults",
+    "pageSize"
   ],    
   components: {
     ResultNormal,
     ResponseInfo
   },
   methods: {
+    debug: function(){
+      console.log("this.searchResults.hits.total: " + this.searchResults.hits.total)
+      console.log("this.searchResults.hits.hits.length(): " + this.searchResults.hits.hits.length)
+      console.log("this.numPage: " + this.numPage);
+    },
     hoverList: function(evt) {
       if (!evt) {
         evt = window.event; 

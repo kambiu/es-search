@@ -10,7 +10,11 @@
       <transition name="fade">
         <b-row align-h="center" align-v="center" class="search_result" v-if="show_result_page">
           <b-col md="10">
-            <ResultContainer :searchHistory="list_search_history" :searchResults="search_results" @action="resultAction($event)" />
+            <ResultContainer 
+                :pageSize="current_query.size"
+                :searchHistory="list_search_history" 
+                :searchResults="search_results" 
+                @action="resultAction($event)" />
           </b-col>
         </b-row>
       </transition>
@@ -41,55 +45,96 @@ export default {
         "Cras justo odio", "Dapibus ac facilisis in", "Morbi leo risus", "Porta ac consectetur ac", "Vestibulum at eros"
       ],
       search_results: null,
-      search_type: ns.searchType.basic
+      search_type: ns.searchType.basic,
+      current_query: {}
     }
   },
   methods: {
+    showAdvancedSearchPage: function(){
+      this.show_result_page = false;
+      this.show_basic_page = false;
+      this.show_advanced_page = true;
+    },
+    showResultPage: function(){
+      this.show_result_page = true;
+      this.show_basic_page = true;
+      this.show_advanced_page = false;
+    },
     /* actions for basic search page */
     basicAction: function(event) {
-      console.log("search action in basic search");
       if (event.action == ns.basicAction.search) {
-        console.log("search action in basic search");
+        console.log("search action in basicAction()");
         this.search_type = ns.searchType.basic
         console.log(event.query);
-        this.updateSearchHistory(event.query);
-        this.parseQueryLoadResult(event.query);
+        this.resetInputBoxValue(); // this is a new search
+        this.updateSearchHistory(ns.searchType.basic, event.query);
+        this.parseQueryLoadResult(ns.searchType.basic, event.query);
         
       } else if (event.action == ns.basicAction.showAdvancedPage) {
-        console.log("show advanced action in basic search");
-        this.show_result_page = false;
-        this.show_basic_page = false;
-        this.show_advanced_page = true;
+        console.log("show advanced action in basicAction()");
+        this.showAdvancedSearchPage();
       }      
     },
     /* actions from advanced search page */
     advancedAction: function(event) {
-      console.log("advacned action in advacned search");
+      console.log("search action in advancedAction()");
       this.search_type = ns.searchType.advanced;
-      this.updateSearchHistory(event.query);
-      this.parseQueryLoadResult(event.query);
+      this.resetInputBoxValue(); // this is a new search
+      this.updateSearchHistory(ns.searchType.advanced, event.query);
+      this.parseQueryLoadResult(ns.searchType.advanced, event.query);
     },
     /* actions from results */
     resultAction: function(event) {
       if (event.action == ns.resultAction.changePage) {
         console.log("change page to ..." + event.query.page)
+        //no reset, no update history
+        this.current_query.from = (event.query.page - 1) * this.current_query.size;
+        console.log("this.current_query.from: " + this.current_query.from)
+        this.queryLoadResult();
+
       } else if (event.action == ns.resultAction.doBasicSearch) {
         this.search_type = ns.searchType.basic;
-        this.updateSearchHistory(event.query);
-        this.parseQueryLoadResult(event.query);
+        this.resetInputBoxValue(); // this is a new search
+        this.updateSearchHistory(ns.searchType.basic, event.query);
+        this.parseQueryLoadResult(ns.searchType.basic, event.query);
       }
     },
-    updateSearchHistory: function(query){
-      var text_submitted = (this.search_type == ns.searchType.basic ? query.text : query.text_or);
+    updateSearchHistory: function(searchType, query){
+      console.log("searchType in updateSearchHistory(): " + searchType)
+      var text_submitted = "";
+      if (searchType == ns.searchType.basic)
+        text_submitted = query.text;
+      else if (searchType == ns.searchType.advanced)
+        if (query.text_or)
+          text_submitted += "+OR(" +query.text_or+ ")"
+        if (query.text_and)
+          text_submitted += "+AND(" +query.text_and+ ")"
+        if (query.text_exact)
+          text_submitted += "+EXACT(" +query.text_exact+ ")"
+        if (query.text_not)
+          text_submitted += "+NOT(" +query.text_not+ ")"
+
       console.log(text_submitted);
       //updat ehistory
       this.list_search_history.unshift(text_submitted);    
       this.list_search_history = this.list_search_history.slice(0, 5);          
     },
-
-    parseQueryLoadResult: function(query){
-      // submit text to elatsicsearch
-
+    resetInputBoxValue: function() {
+      this.current_query = {};
+      this.current_query.from = 0;
+      this.current_query.size = 10;
+      this.current_query.source = {excludes: ["content"] };
+      this.current_query.highlight = { fields: { content: {} } };
+      this.current_query.sort = "_score";
+      this.current_query.query = null;
+      // var q_scope = "";
+      this.current_query.index = "*";
+    },
+    parseQueryLoadResult: function(searchType, query) {
+      this.parseQuery(searchType, query);
+      this.queryLoadResult();
+    },
+    parseQuery: function(searchType, query) {
       /* require attributes
         text basic
         any
@@ -103,59 +148,39 @@ export default {
         aggregation condition
 
       */
-      console.log("parseAndSendQuery------");
-      console.log(query);
-      console.log("search_type: " + this.search_type);
-      /* define must need filed */
-      var q_from = 0; //TODO pagingation
-      var q_size = 10;
-      var q_source = {excludes: ["content"] };
-      var q_highlight = {
-        fields: { content: {} }
-      };
-      var q_sort = "_score";
-      var q_query = null;
-      // var q_scope = "";
-      var q_index = "*";
-
-      if (this.search_type == ns.searchType.basic) {
-        console.log("basic query");
-         q_query = {
-          match: {
-            content: query.text
+      console.log("parseQuery------");
+      if (searchType == ns.searchType.basic) {
+        console.log("parseQuery Basic------");
+        //TODO change to simple query allowing AND OR opertaor
+        this.current_query.query = {
+          query_string: {
+            default_field : "content",
+            query : query.text
           }
-        }
-      } else if (this.search_type == ns.searchType.advanced) {
-        console.log("advanced query");
-        q_from = 0;
-        q_size = query.max_results;
-        //TODO
-        // q_scope = query.scope;
-        q_index = query.repository;
-        // TODO meta
-        // scope: "all",
-        // date: {
-        //   from: null,
-        //   to: null
-        // },  
-
-        q_query = {
+        };
+      } else if (searchType == ns.searchType.advanced) {
+        console.log("parseQuery Advanced------");
+        this.current_query.from = 0;
+        this.current_query.size = query.max_results;
+        this.current_query.index = query.repository;
+        // TODO meta: scope, date from, to
+        this.current_query.query = {
           bool: {
             must: [],
             must_not: []
           }
         }
-
+        // Any of these words
         if (query.text_or) {
-          q_query.bool.must.push(
+          this.current_query.query.bool.must.push(
             {
               match: { content: query.text_or } 
             }
           )
         } 
-
+        // All of these words
         if (query.text_and) {
-          q_query.bool.must.push(
+          this.current_query.query.bool.must.push(
             {
               match: { 
                 content: {
@@ -166,43 +191,45 @@ export default {
             }
           )
         } 
-
+        // Exact phrase
         if(query.text_exact){
-          q_query.bool.must.push(
+          this.current_query.query.bool.must.push(
             { 
               match_phrase: { content: query.text_exact }
             }
           )
         } 
-
+        // None of these words
         if(query.text_not){
-          q_query.bool.must_not.push(
+          this.current_query.query.bool.must_not.push(
             {
               match: { content: query.text_not }
             }
           )
-        }
-      }
-
-      console.log(q_query);
+        }      
+      } // end parse advanced search query
+    },
+    queryLoadResult: function(){
+      // submit text to elatsicsearch
+      console.log(this.current_query);
       //TODO show filter panel on aggregation?
       console.log("Submitting search  -------------------->>");
 
       var me = this; /* important , callback functino cannot access to this variable*/
       esclient.search({
-        index: q_index,
+        index: this.current_query.index,
         body: {
-          from: q_from, 
-          size: q_size,
-          _source: q_source,
-          query: q_query,
-          highlight: q_highlight,
-          sort: q_sort
+          from: this.current_query.from, 
+          size: this.current_query.size,
+          _source: this.current_query.source,
+          query: this.current_query.query,
+          highlight: this.current_query.highlight,
+          sort: this.current_query.sort
         }
       }).then(function (body) {        
         me.search_results = body;
          // toggle component display
-        me.show_result_page = true;
+        me.showResultPage();
       }, function (error) {
         console.trace(error.message);
         console.log(">>>>>>>>>>>>>>>>> Error made <<<<<<<<<<<<<<<<<<");
@@ -235,4 +262,7 @@ strong, em{
   border-color: rgba(0, 0, 0, 0.2);
 }
 
+.hidden {
+  display: none;
+}
 </style>
