@@ -2,7 +2,7 @@
   <div class="basic-search-container">    
     <b-row>
       <b-input-group size="lg">
-        <b-form-input id="input_text" class="el_form_input" v-model="request.text" 
+        <b-form-input id="input_text" :class="class_text" v-model="request.text" 
             autocomplete="off" placeholder="Enter some words" size="lg" required />
         <b-input-group-append>
 
@@ -23,6 +23,11 @@
         <div id="opt_adv_search"><a href="#" v-on:click="onAdvacnedOption()">More Option...</a></div>
       </b-col>
       
+    </b-row>
+    <b-row>
+      <b-alert show variant="danger" :class="class_alert" style="width: 100%; margin:10px;" dismissible>
+        <span v-html="err_message" />
+      </b-alert>
     </b-row>
 
     <!-- 
@@ -55,9 +60,23 @@ export default {
         // text
         text: ""
       },
+      err_text: false,
+      err_message: "",
       trends: [
         "111", "222", "333"
       ]
+    }
+  },
+  computed: {
+    class_text: function(){
+      return {
+        hasError: this.err_text
+      }
+    },
+    class_alert: function() {
+      return {
+        hidden: this.err_message == 0
+      }
     }
   },
   methods: {
@@ -65,10 +84,32 @@ export default {
       if (typeof submit_text === 'string' || submit_text instanceof String){
         this.request.text=submit_text;
       }
-      this.$emit("action", {action: ns.basicAction.search, query: this.request});
+
+      var isValid = this.basicSearchValidation();
+      if (isValid)
+        this.$emit("action", {action: ns.basicAction.search, query: this.request});
+        
     },
     onAdvacnedOption: function() {
       this.$emit("action", {action: ns.basicAction.showAdvancedPage});
+    },
+    basicSearchValidation: function() {
+
+      // check textbox
+      if (this.request.text) {
+        if (this.request.text.trim().length > 0){
+          // reset form error
+          
+          this.err_text = false;
+          this.err_message = "";
+          return true;
+        }
+          
+      }
+      // highlight textbox
+      this.err_text = true;
+      this.err_message = "Please enter some text."
+      return false;
     }
   }
 }

@@ -265,4 +265,9 @@ strong, em{
 .hidden {
   display: none;
 }
+
+.hasError {
+  border-color: red;
+  border-width: 2px;
+}
 </style>

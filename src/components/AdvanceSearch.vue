@@ -1,5 +1,10 @@
 <template>
-  <div class="advanced-search-container">    
+  <div class="advanced-search-container">
+    <b-row>
+      <b-alert show variant="danger" :class="class_alert" style="width: 100%; margin:10px;" dismissible>
+        <span v-html="err_message" />
+      </b-alert>
+    </b-row>
     <b-form @submit="onSubmit" @reset="onReset">
       <b-row id="adv_search_param">
         <b-col md="8">
@@ -13,25 +18,25 @@
 
           <b-form-group horizontal
                   label="Any of these words:" label-class="text-md" label-for="input_text_or">
-            <b-form-input id="input_text_or" class="el_form_input" autocomplete="off"
+            <b-form-input id="input_text_or" :class="class_texts" autocomplete="off"
                 v-model="request.text_or" placeholder="Enter some words" size="md" />
           </b-form-group>
 
           <b-form-group horizontal
                   label="All of these words:" label-class="text-md" label-for="input_text_and">
-            <b-form-input id="input_text_and" class="el_form_input" autocomplete="off"
+            <b-form-input id="input_text_and" :class="class_texts" autocomplete="off"
                 v-model="request.text_and" placeholder="Enter some words" size="md" />
+          </b-form-group>
+
+          <b-form-group horizontal label="Exact phrase:" label-class="text-md" label-for="input_text_exact">
+            <b-form-input id="input_text_exact" :class="class_texts" autocomplete="off" 
+                v-model="request.text_exact" placeholder="Enter some words" size="md" />
           </b-form-group>
 
           <b-form-group horizontal
                   label="None of these words:" label-class="text-md" label-for="input_text_not">
-            <b-form-input id="input_text_not" class="el_form_input" autocomplete="off" 
+            <b-form-input id="input_text_not" autocomplete="off" 
                   v-model="request.text_not"  placeholder="Enter some words" size="md" />
-          </b-form-group>
-
-          <b-form-group horizontal label="Exact phrase:" label-class="text-md" label-for="input_text_exact">
-            <b-form-input id="input_text_exact" class="el_form_input" autocomplete="off" 
-                v-model="request.text_exact" placeholder="Enter some words" size="md" />
           </b-form-group>
 
           <b-form-group horizontal label="Date:" label-class="text-md" label-for="input_date">
@@ -149,17 +154,32 @@ export default {
         // other filters
         repository: ["cake", "staff", "student"]
       },
-      trends: [
-        "111", "222", "333"
-      ]
+      err_fields: {
+        texts: false
+      },
+      err_message: ""
     }
+  },
+  computed: {
+    class_texts: function() {
+      return {
+        hasError: this.err_fields.texts
+      }      
+    },
+    class_alert: function() {
+      return {
+        hidden: this.err_message == 0
+      }      
+    },
   },
   methods: {
     onSubmit(evt) {
       evt.preventDefault();
       console.log( this.request)
-      // this.$emit("action", this.request);      
-      this.$emit("action", {action: ns.advancedAction.search, query: this.request});
+      // this.$emit("action", this.request);
+      // var isValid = this.advancedSearchValidation();
+      if (this.advancedSearchValidation())
+        this.$emit("action", {action: ns.advancedAction.search, query: this.request});
     },
     onReset(evt){
         evt.preventDefault();
@@ -195,6 +215,24 @@ export default {
         this.request.file_size.lt_text = this.request.file_size.lt_text.replace("KB", "MB")
       }
       
+    },
+    advancedSearchValidation: function() {
+      // check textbox
+      if ( (this.request.text_or && this.request.text_or.trim().length > 0)
+        || (this.request.text_and && this.request.text_and.trim().length > 0)
+        || (this.request.text_exact && this.request.text_exact.trim().length > 0) ) {
+
+        // reset error message
+        this.err_message = ""
+        this.err_fields.texts = false;
+        console.log("advancedSearchValidation return true");
+        return true;
+      }
+      console.log("advancedSearchValidation return false");
+      // highlight textbox
+      this.err_message = "Please enter some texts."
+      this.err_fields.texts = true;
+      return false;
     }
   }
 }
