@@ -2,7 +2,17 @@
   <div>
     <b-row>
       <b-col sm="8" class="my-0">
-        <ResponseInfo :time="searchResults.took" :hits="searchResults.hits.total" />
+        <b-row>
+          <b-col class="response-info">
+            <ResponseInfo :time="searchResults.took" :hits="searchResults.hits.total" />
+          </b-col>
+          <b-col>
+            <b-form-group horizontal label="Sort by:" label-class="text-md-left" label-for="num_results">
+              
+              <b-form-select v-model="result_sort_by" :options="sortby_options" @input="changeSorting()"  />
+            </b-form-group>
+          </b-col>
+        </b-row>        
         <ResultNormal v-for="item in searchResults.hits.hits" :result="item" :key="item._id" />
       </b-col>
       <b-col sm="3" class="my-0">
@@ -40,7 +50,12 @@ export default {
   name: 'ResultContainer',
   data() {
     return {
-      currentPage: 1
+      currentPage: 1,
+      sortby_options: [
+        { value: "_score", text: "Relevance" },
+        { value: "date_modified", text: "Modified date" },
+      ],
+      result_sort_by: "_score"
     }
   },
   computed: {
@@ -59,9 +74,7 @@ export default {
   },
   methods: {
     debug: function(){
-      console.log("this.searchResults.hits.total: " + this.searchResults.hits.total)
-      console.log("this.searchResults.hits.hits.length(): " + this.searchResults.hits.hits.length)
-      console.log("this.numPage: " + this.numPage);
+      console.log(this.result_sort_by);
     },
     hoverList: function(evt) {
       if (!evt) {
@@ -80,6 +93,10 @@ export default {
       console.log("change page: " + page);
       // this.$emit("action", {page: page});
       this.$emit("action", {action: ns.resultAction.changePage, query: {"page": page}});
+    },
+    changeSorting: function() {
+      // console.log("ResultContainer.changeSorting(): change sorting to " + this.result_sort_by);
+      this.$emit("action", {action: ns.resultAction.changeSorting, query: {"sort": this.result_sort_by}});
     }
   }
 }
@@ -96,5 +113,11 @@ export default {
 
 #pageNavigation {
   margin-top: 20px;
+}
+
+.response-info {
+  margin-left: 8px;
+  margin-top: 3px;
+  margin-bottom: 10px;
 }
 </style>

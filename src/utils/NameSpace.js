@@ -17,5 +17,6 @@ ns.resultAction = {}
 ns.resultAction.showAdvancedPage = 0
 ns.resultAction.doBasicSearch = 1
 ns.resultAction.changePage = 2
+ns.resultAction.changeSorting = 3
 
 module.exports = ns;

@@ -18,9 +18,5 @@ export default {
 </script>
 
 <style scoped>
-.response-info {
-    margin-left: 15px;
-    margin-top: 18px;
-    margin-bottom: 10px;
-}
+
 </style>

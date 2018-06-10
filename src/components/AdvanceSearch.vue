@@ -176,6 +176,8 @@ export default {
     onSubmit(evt) {
       evt.preventDefault();
       console.log( this.request)
+      // if (this.request)
+      //   return;
       // this.$emit("action", this.request);
       // var isValid = this.advancedSearchValidation();
       if (this.advancedSearchValidation())

@@ -97,6 +97,24 @@ export default {
         this.resetInputBoxValue(); // this is a new search
         this.updateSearchHistory(ns.searchType.basic, event.query);
         this.parseQueryLoadResult(ns.searchType.basic, event.query);
+
+      } 
+      else if (event.action == ns.resultAction.changeSorting) {
+
+        if (event.query.sort.includes("date")) {
+          console.log("ES^--->>")
+          this.current_query.sort = {}
+          this.current_query.sort[event.query.sort] = {
+            order: "desc"
+          }
+
+          // event.query.sort = { sort_field_name: { order: "desc" } }
+        } else {
+          this.current_query.sort = event.query.sort;
+        }        
+        this.current_query.from = 0;
+        console.log("this.current_query.sort: " + this.current_query.sort)
+        this.queryLoadResult();
       }
     },
     updateSearchHistory: function(searchType, query){
@@ -206,12 +224,43 @@ export default {
               match: { content: query.text_not }
             }
           )
-        }      
+        }
+
+        // date
+
+        if (query.date.from && query.date.to) {
+          this.current_query.query.bool.must.push(
+            {
+              range: { 
+                date_modified: {
+                  gte: query.date.from + " 00:00:00",
+                  lte: query.date.to + " 00:00:00"
+                }
+              }
+            }
+          )
+        } else if (query.date.from) {
+          this.current_query.query.bool.must.push(
+            {
+              range: { 
+                date_modified: { gte: query.date.from }
+              }
+            }
+          )
+        } else if (query.date.to) {
+          this.current_query.query.bool.must.push(
+            {
+              range: { 
+                date_modified: { lte: query.date.to }
+              }
+            }
+          )
+        }
       } // end parse advanced search query
     },
     queryLoadResult: function(){
       // submit text to elatsicsearch
-      console.log(this.current_query);
+      // console.log(this.current_query);
       //TODO show filter panel on aggregation?
       console.log("Submitting search  -------------------->>");
 
