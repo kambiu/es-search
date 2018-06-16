@@ -147,6 +147,7 @@ export default {
       this.current_query.query = null;
       // var q_scope = "";
       this.current_query.index = "*";
+      this.current_query.aggs = null;
     },
     parseQueryLoadResult: function(searchType, query) {
       this.parseQuery(searchType, query);
@@ -257,6 +258,18 @@ export default {
           )
         }
       } // end parse advanced search query
+
+      /* Start aggregation */ 
+      this.current_query.aggs = {
+        grade_term_agg: {
+          terms: {field: "grade", order: {"_term": "asc"}},
+          aggs:{
+              level2: {
+                  terms: {"field": "active"}
+              }
+          }
+        }
+      }
     },
     queryLoadResult: function(){
       // submit text to elatsicsearch
@@ -273,14 +286,16 @@ export default {
           _source: this.current_query.source,
           query: this.current_query.query,
           highlight: this.current_query.highlight,
-          sort: this.current_query.sort
+          sort: this.current_query.sort,
+          aggs: this.current_query.aggs
         }
       }).then(function (body) {        
         me.search_results = body;
          // toggle component display
+         console.log("Return >>>>>> " + JSON.stringify(body))
         me.showResultPage();
       }, function (error) {
-        console.trace(error.message);
+        console.error(error.message);
         console.log(">>>>>>>>>>>>>>>>> Error made <<<<<<<<<<<<<<<<<<");
       });
 

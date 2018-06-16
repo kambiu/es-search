@@ -30,7 +30,7 @@ export default {
     }
   },
   created: function () {
-    console.log("Create Single Normal Result " + this.result)
+    // console.log("Create Single Normal Result " + this.result)
   }
 }
 </script>

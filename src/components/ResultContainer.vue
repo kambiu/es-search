@@ -1,28 +1,26 @@
 <template>
   <div>
     <b-row>
-      <b-col sm="8" class="my-0">
+      <b-col sm="9" id="main">
         <b-row>
           <b-col class="response-info">
             <ResponseInfo :time="searchResults.took" :hits="searchResults.hits.total" />
           </b-col>
           <b-col>
             <b-form-group horizontal label="Sort by:" label-class="text-md-left" label-for="num_results">
-              
               <b-form-select v-model="result_sort_by" :options="sortby_options" @input="changeSorting()"  />
             </b-form-group>
           </b-col>
         </b-row>        
         <ResultNormal v-for="item in searchResults.hits.hits" :result="item" :key="item._id" />
       </b-col>
-      <b-col sm="3" class="my-0">
-        <div>Search History:</div>
-        <div>
-          <b-list-group class="listGrp">
-            <b-list-group-item v-for="(item, index) in searchHistory" :key="index" v-on:click="historySearch(item)"
-            class="listSearchHistory" href="#">{{item}}</b-list-group-item>
-          </b-list-group>
-        </div>
+      <b-col sm="3" id="right-panel">
+        <!-- for multiple filter -->
+        <ResultRightPanel 
+          @action="rightPanelAction"
+          :searchHistory="searchHistory"
+          :aggregations="searchResults.aggregations"
+        />
       </b-col>
     </b-row>
     <button class="hidden" v-on:click="debug">Debug</button>
@@ -45,6 +43,7 @@
 import ResultNormal from './ResultNormal.vue'
 import ResponseInfo from './ResponseInfo.vue'
 import ns from '../utils/NameSpace.js'
+import ResultRightPanel from './ResultRightPanel.vue'
 
 export default {
   name: 'ResultContainer',
@@ -70,24 +69,17 @@ export default {
   ],    
   components: {
     ResultNormal,
-    ResponseInfo
+    ResponseInfo,
+    ResultRightPanel
   },
   methods: {
     debug: function(){
       console.log(this.result_sort_by);
     },
-    hoverList: function(evt) {
-      if (!evt) {
-        evt = window.event; 
-      }
-      
-      var el = (event.target || event.srcElement);
-      el.setAttribute('active', "");
-    },
-    historySearch: function(text_history) {
-      // this.$emit("action", {text: text_history});
-      this.$emit("action", {action: ns.resultAction.doBasicSearch, query: {text: text_history}});
-    },
+    // historySearch: function(text_history) {
+    //   // this.$emit("action", {text: text_history});
+    //   this.$emit("action", {action: ns.resultAction.doBasicSearch, query: {text: text_history}});
+    // },
     pageSearch: function(page) {
       console.log("-------------change page--------------")
       console.log("change page: " + page);
@@ -97,7 +89,14 @@ export default {
     changeSorting: function() {
       // console.log("ResultContainer.changeSorting(): change sorting to " + this.result_sort_by);
       this.$emit("action", {action: ns.resultAction.changeSorting, query: {"sort": this.result_sort_by}});
+    },
+
+    rightPanelAction: function(right_panel_action) {
+      this.$emit("action", right_panel_action);
     }
+  },
+  created(){
+
   }
 }
 
@@ -105,11 +104,6 @@ export default {
 </script>
 
 <style scoped>
-
-.listSearchHistory:hover {
-  background-color: #007bff;
-  color: white;
-}
 
 #pageNavigation {
   margin-top: 20px;

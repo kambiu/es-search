@@ -62,13 +62,13 @@
               <b-form-select id="num_results" v-model="request.max_results" :options="[10,20,50]"  />
           </b-form-group>
 
-          <b-form-group horizontal label="File type:" label-class="text-md-left">
-              <b-form-select v-model="request.file_type" :options="file_type_options"  />
+          <b-form-group horizontal label="(no relevant data) File type:" label-class="text-md-left">
+              <b-form-select v-model="request.file_type" :options="file_type_options"  disabled />
           </b-form-group>
 
-          <b-form-group horizontal label="File size:" label-class="text-md-left">
+          <b-form-group horizontal label="(no relevant data) File size:" label-class="text-md-left">
                 <b-input-group :prepend="request.file_size.gt_text" class="file_size_grp_magrin">
-                  <b-form-input autocomplete="off" v-model="request.file_size.greater_than"></b-form-input>
+                  <b-form-input autocomplete="off" v-model="request.file_size.greater_than"  disabled></b-form-input>
                   <b-input-group-append>
                     <b-btn id="gt_kb" variant="outline-success" v-on:click="change_file_size">KB</b-btn>
                     <b-btn id="gt_mb" variant="outline-info" v-on:click="change_file_size">MB</b-btn>
@@ -76,7 +76,7 @@
                 </b-input-group>
 
                 <b-input-group :prepend="request.file_size.lt_text" class="file_size_grp_magrin">
-                  <b-form-input autocomplete="off" v-model="request.file_size.less_than"></b-form-input>
+                  <b-form-input autocomplete="off" v-model="request.file_size.less_than"  disabled></b-form-input>
                   <b-input-group-append>
                     <b-btn id="lt_kb" variant="outline-success" v-on:click="change_file_size">KB</b-btn>
                     <b-btn id="lt_mb" variant="outline-info" v-on:click="change_file_size">MB</b-btn>
@@ -84,8 +84,8 @@
                 </b-input-group>
           </b-form-group>
 
-          <b-form-group horizontal label="Search scope:" label-class="text-md-left">
-              <b-form-radio-group buttons v-model="request.scope" class="pt-2" :options="scope_options" />
+          <b-form-group horizontal label="(no relevant data) Search scope:" label-class="text-md-left">
+              <b-form-radio-group buttons v-model="request.scope" class="pt-2" :options="scope_options"  disabled/>
           </b-form-group>
 
           

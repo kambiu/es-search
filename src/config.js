@@ -10,6 +10,6 @@ appcfg.search.index = ["*"]
 appcfg.search.aggregation = {};
 appcfg.search.fields = {};
 
-appcfg.loglevel = "trace";
+appcfg.loglevel = "debug";
 
 module.exports = appcfg;
