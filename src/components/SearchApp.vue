@@ -14,6 +14,7 @@
                 :pageSize="current_query.size"
                 :searchHistory="list_search_history" 
                 :searchResults="search_results" 
+                :resultFiltered="(this.current_query.query.bool.filter.length > 0)"
                 @action="resultAction($event)" />
           </b-col>
         </b-row>
@@ -28,6 +29,7 @@ import AdvanceSearch from './AdvanceSearch.vue'
 import BasicSearch from './BasicSearch.vue'
 import esclient from '../utils/ESHelper.js'
 import ns from '../utils/NameSpace.js'
+import appcfg from '../config.js'
 
 export default {
   name: 'SearchApp',
@@ -35,6 +37,9 @@ export default {
     ResultContainer,
     AdvanceSearch,
     BasicSearch
+  },
+  created() {
+  
   },
   data() {
     return {
@@ -48,6 +53,9 @@ export default {
       search_type: ns.searchType.basic,
       current_query: {}
     }
+  },
+  computed: {
+   
   },
   methods: {
     showAdvancedSearchPage: function(){
@@ -115,6 +123,18 @@ export default {
         this.current_query.from = 0;
         console.log("this.current_query.sort: " + this.current_query.sort)
         this.queryLoadResult();
+
+      } else if (event.action == ns.resultAction.filterSearch) {
+        console.log("Filter sth: " + event.filter);
+        // console.log("Filter sth: " + event.filter.field_name + " > " + event.filter.field_value);
+        this.current_query.from = 0;
+        this.current_query.query.bool.filter.push(event.filter);
+        this.queryLoadResult();
+
+      } else if (event.action == ns.resultAction.clearFilter) {
+        this.current_query.from = 0;
+        this.current_query.query.bool.filter = [];
+        this.queryLoadResult();
       }
     },
     updateSearchHistory: function(searchType, query){
@@ -172,10 +192,19 @@ export default {
         console.log("parseQuery Basic------");
         //TODO change to simple query allowing AND OR opertaor
         this.current_query.query = {
-          query_string: {
-            default_field : "content",
-            query : query.text
-          }
+          bool: {
+            must: [
+              { 
+                query_string: {
+                  default_field : "content",
+                  query : query.text
+                }
+              }
+            ],
+            must_not: [],
+            filter: []
+          }     
+          
         };
       } else if (searchType == ns.searchType.advanced) {
         console.log("parseQuery Advanced------");
@@ -186,7 +215,8 @@ export default {
         this.current_query.query = {
           bool: {
             must: [],
-            must_not: []
+            must_not: [],
+            filter: []
           }
         }
         // Any of these words
@@ -260,13 +290,21 @@ export default {
       } // end parse advanced search query
 
       /* Start aggregation */ 
-      this.current_query.aggs = {
-        grade_term_agg: {
-          terms: {field: "grade", order: {"_term": "asc"}},
-          aggs:{
-              level2: {
-                  terms: {"field": "active"}
-              }
+      this.current_query.aggs = {}
+
+      //terms
+      for (let field of appcfg.search.aggregation.terms_fields) {
+        this.current_query.aggs["terms_" + field] = {
+          "terms": { "field": field }
+        }
+      }
+
+      //range
+      for (let obj of appcfg.search.aggregation.range_fields) {
+        this.current_query.aggs["ranges_" + obj.field_name] = {
+          "range": {
+            "field": obj.field_name,
+            "ranges": obj.groups
           }
         }
       }
@@ -274,7 +312,6 @@ export default {
     queryLoadResult: function(){
       // submit text to elatsicsearch
       // console.log(this.current_query);
-      //TODO show filter panel on aggregation?
       console.log("Submitting search  -------------------->>");
 
       var me = this; /* important , callback functino cannot access to this variable*/
@@ -292,11 +329,12 @@ export default {
       }).then(function (body) {        
         me.search_results = body;
          // toggle component display
-         console.log("Return >>>>>> " + JSON.stringify(body))
+        //  console.log("Return >>>>>> " + JSON.stringify(body))
         me.showResultPage();
       }, function (error) {
         console.error(error.message);
         console.log(">>>>>>>>>>>>>>>>> Error made <<<<<<<<<<<<<<<<<<");
+        //TODO make alert about no living connections
       });
 
       console.log("end parseAndSendQuery ---------------");

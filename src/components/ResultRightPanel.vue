@@ -1,8 +1,34 @@
 <template>
   <div>
-    <b-table :items="items" :fields="fields" outlined class="itemhover">
-    </b-table>
+    <!-- aggs term -->
+    <div v-for="(item, index) in arr_terms_filter" :key="'term_' + index"> 
+      <div>{{ item.display_name }}</div>
+      <div>
+        <b-list-group class="listGrp">
+          <b-list-group-item v-for="(doc_count, field_value) in item.values" :key="field_value" v-on:click="filterSearchTerms(item.field_name, field_value)"
+          class="itemhover" href="#">{{ field_value + " (" + doc_count + ")"}}</b-list-group-item>
+        </b-list-group>
+      </div>
+      <br />
+    </div>
 
+    <!-- aggs term -->
+    <div v-for="(item, index) in arr_ranges_filter" :key="'range_' + index"> 
+      <div>{{ item.display_name }}</div>
+      <div>
+        <b-list-group class="listGrp">
+          <b-list-group-item v-for="(field_meta, field_value) in item.values" :key="field_value" v-on:click="filterSearchRanges(item.field_name, field_meta.from, field_meta.to)"
+          class="itemhover" href="#">{{ field_value + " (" + field_meta.doc_count + ")"}}</b-list-group-item>
+        </b-list-group>
+      </div>
+      <br />
+    </div>
+
+    <b-button style="width: 100%;" v-if="resultFiltered" v-on:click="filterClear()">
+      Clear all filters
+    </b-button>
+
+    <br /><br />
     <div>Search History:</div>
     <div>
       <b-list-group class="listGrp">
@@ -22,30 +48,58 @@ export default {
   name: 'ResultRightPanel',
   data() {
     return {
-      fields: ["active_filter"],
-      // items: [
-      //   { active_filter: "1" },
-      //   { active_filter: "2" },
-      //   { active_filter: "3" }
-      // ]
+      filtered: false
     }
   },
   computed: {
-    items: function() {
-      var arr_agg = [];
-      for (var idx in this.aggregations.grade_term_agg.buckets) {
-        var value = this.aggregations.grade_term_agg.buckets[idx].key + " (" + this.aggregations.grade_term_agg.buckets[idx].doc_count + ")"
-        // var new_obj = {};
-        // new_obj[obj.key] = obj.doc_count;
-        arr_agg.push({ "active_filter":  value});
+    arr_terms_filter: function() {
+      var arr_terms = [];
+      for (var key in this.aggregations) { //term_active, term_grade
+        if (key.includes("terms_")) {
+          var new_obj = {}
+          var field_name = key.replace("terms_", "");
+          new_obj["field_name"] = field_name
+          new_obj["display_name"] = ns.label.result.aggs.terms[field_name];
+          new_obj["values"] = {}
+          for (let term of this.aggregations[key].buckets) {
+            if (parseInt(term.doc_count) > 0)
+              new_obj["values"][term.key] = term.doc_count;
+          }
+          arr_terms.push(new_obj);
+        }
+        // else it is for term aggreation string type
+      }
+    
+      return arr_terms;
+    },
+    arr_ranges_filter: function() {
+      var arr_ranges = []
+      for (var key in this.aggregations) {
+        if (key.includes("ranges_")) {
+          var new_obj = {}
+          var field_name = key.replace("ranges_", "");
+          new_obj["field_name"] = field_name
+          new_obj["display_name"] = ns.label.result.aggs.range[field_name];
+          new_obj["values"] = {}
+          for (let range of this.aggregations[key].buckets) {
+            if (range.doc_count > 0) {
+              new_obj["values"][range.key] = {};
+              new_obj["values"][range.key].from = range.from;
+              new_obj["values"][range.key].to = range.to;
+              new_obj["values"][range.key].doc_count = range.doc_count;
+            }
+          }
+          arr_ranges.push(new_obj);
+        }
       }
 
-      return arr_agg;
+      return arr_ranges;
     }
   },
   props: [
     "searchHistory",
-    "aggregations"
+    "aggregations",
+    "resultFiltered"
   ],    
   components: {
 
@@ -54,18 +108,38 @@ export default {
     historySearch: function(text_history) {
       this.$emit("action", {action: ns.resultAction.doBasicSearch, query: {text: text_history}});
     },
+    filterSearchTerms: function(field_name, field_value) {
+      console.log("filterSearchTerms:", field_name, field_value);
+      var terms_filter = {
+        term: {}
+      }
+      terms_filter.term[field_name] = field_value
+
+      this.$emit("action", {action: ns.resultAction.filterSearch, filter: terms_filter});
+    },
+    filterSearchRanges: function(field_name, from, to) {
+      console.log("filterSearchRanges: ", field_name, from, to);
+      var ranges_filter = {
+        range: {}
+      }
+      ranges_filter.range[field_name] = {};
+      if (from) {
+        ranges_filter.range[field_name].gte = from;
+      }
+      if (to) {
+        ranges_filter.range[field_name].lt = to;
+      }
+      this.$emit("action", {action: ns.resultAction.filterSearch, filter: ranges_filter});
+    },
+    filterClear: function() {
+      console.log("ResultRightPanel - Clear result")
+      this.$emit("action", {action: ns.resultAction.clearFilter});
+    }
   },
   created() {
-    console.log("right panel created");
-    // console.log(JSON.stringify(this.aggregations));
-    console.log("-->>");
-    console.log(this.aggregations[0]);
-
-
-    for (var obj in this.aggregations.grade_term_agg.buckets) {
-      console.log(this.aggregations.grade_term_agg.buckets[obj])
-
-    }
+    console.log("return >>: " + JSON.stringify(this.aggregations));
+    console.log("arr_ranges_filter >>: " + JSON.stringify(this.arr_ranges_filter));
+    console.log("rifhtpanel:", this.resultFiltered)
   }
 }
 

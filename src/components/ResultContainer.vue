@@ -17,9 +17,10 @@
       <b-col sm="3" id="right-panel">
         <!-- for multiple filter -->
         <ResultRightPanel 
-          @action="rightPanelAction"
+          @action="rightPanelAction($event)"
           :searchHistory="searchHistory"
           :aggregations="searchResults.aggregations"
+          :resultFiltered="resultFiltered"
         />
       </b-col>
     </b-row>
@@ -65,7 +66,8 @@ export default {
   props: [
     "searchHistory",
     "searchResults",
-    "pageSize"
+    "pageSize",
+    "resultFiltered",
   ],    
   components: {
     ResultNormal,
@@ -91,8 +93,8 @@ export default {
       this.$emit("action", {action: ns.resultAction.changeSorting, query: {"sort": this.result_sort_by}});
     },
 
-    rightPanelAction: function(right_panel_action) {
-      this.$emit("action", right_panel_action);
+    rightPanelAction: function(event) {
+      this.$emit("action", event);
     }
   },
   created(){
