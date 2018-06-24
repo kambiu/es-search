@@ -50,5 +50,6 @@ appcfg.search.fields = {};
 
 appcfg.loglevel = "debug";
 
+appcfg.languages=["en-us", "zh-hk", "zh-cn"]
 
 module.exports = appcfg;

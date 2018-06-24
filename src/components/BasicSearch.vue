@@ -3,7 +3,7 @@
     <b-row>
       <b-input-group size="lg">
         <b-form-input id="input_text" :class="class_text" v-model="request.text" 
-            autocomplete="off" placeholder="Enter some words" size="lg" required />
+            autocomplete="off" :placeholder="labels.common.hints" size="lg" required />
         <b-input-group-append>
 
           <b-btn v-on:click="onSubmit" class="transparent">
@@ -16,11 +16,11 @@
 
     <b-row id="search_options" align-h="between">
       <b-col>
-        Trending Now:
+        {{ labels.basic.trend }}
         <a class="trend" href="#" v-for="item in trends" :key="item" v-on:click="onSubmit(item)" >{{ item }}</a>
       </b-col>
       <b-col>
-        <div id="opt_adv_search"><a href="#" v-on:click="onAdvacnedOption()">More Option...</a></div>
+        <div id="opt_adv_search"><a href="#" v-on:click="onAdvacnedOption()">{{ labels.basic.more_option }}</a></div>
       </b-col>
       
     </b-row>
@@ -68,6 +68,9 @@ export default {
     }
   },
   computed: {
+    labels() {
+      return this.$store.state.labels;
+    },
     class_text: function(){
       return {
         hasError: this.err_text
@@ -108,7 +111,7 @@ export default {
       }
       // highlight textbox
       this.err_text = true;
-      this.err_message = "Please enter some text."
+      this.err_message = this.labels.common.error_empty_field
       return false;
     }
   }

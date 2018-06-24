@@ -25,11 +25,11 @@
     </div>
 
     <b-button style="width: 100%;" v-if="resultFiltered" v-on:click="filterClear()">
-      Clear all filters
+      {{ labels.result.clear_filter }}
     </b-button>
 
     <br /><br />
-    <div>Search History:</div>
+    <div>{{ labels.result.history }}</div>
     <div>
       <b-list-group class="listGrp">
         <b-list-group-item v-for="(item, index) in searchHistory" :key="index" v-on:click="historySearch(item)"
@@ -52,6 +52,9 @@ export default {
     }
   },
   computed: {
+    labels() {
+      return this.$store.state.labels;
+    },
     arr_terms_filter: function() {
       var arr_terms = [];
       for (var key in this.aggregations) { //term_active, term_grade
@@ -59,7 +62,8 @@ export default {
           var new_obj = {}
           var field_name = key.replace("terms_", "");
           new_obj["field_name"] = field_name
-          new_obj["display_name"] = ns.label.result.aggs.terms[field_name];
+          //new_obj["display_name"] = ns.label.result.aggs.terms[field_name];
+          new_obj["display_name"] = this.labels.custom.filter[field_name];
           new_obj["values"] = {}
           for (let term of this.aggregations[key].buckets) {
             if (parseInt(term.doc_count) > 0)
@@ -79,7 +83,8 @@ export default {
           var new_obj = {}
           var field_name = key.replace("ranges_", "");
           new_obj["field_name"] = field_name
-          new_obj["display_name"] = ns.label.result.aggs.range[field_name];
+          // new_obj["display_name"] = ns.label.result.aggs.range[field_name];
+          new_obj["display_name"] = this.labels.custom.filter[field_name];
           new_obj["values"] = {}
           for (let range of this.aggregations[key].buckets) {
             if (range.doc_count > 0) {

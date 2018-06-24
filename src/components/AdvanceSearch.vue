@@ -10,46 +10,46 @@
         <b-col md="8">
           <b-row align-h="start" class="form-control-btn">
             <b-col>        
-              <b-button type="submit" variant="success">Submit</b-button>
+              <b-button type="submit" variant="success">{{ labels.advanced.submit }}</b-button>
               &nbsp;
-              <b-button type="reset">Reset</b-button>
+              <b-button type="reset">{{ labels.advanced.reset }}</b-button>
             </b-col>
           </b-row>
 
           <b-form-group horizontal
-                  label="Any of these words:" label-class="text-md" label-for="input_text_or">
+                  :label="labels.advanced.text_or" label-class="text-md" label-for="input_text_or">
             <b-form-input id="input_text_or" :class="class_texts" autocomplete="off"
-                v-model="request.text_or" placeholder="Enter some words" size="md" />
+                v-model="request.text_or" :placeholder="labels.common.hints" size="md" />
           </b-form-group>
 
           <b-form-group horizontal
-                  label="All of these words:" label-class="text-md" label-for="input_text_and">
+                  :label="labels.advanced.text_and" label-class="text-md" label-for="input_text_and">
             <b-form-input id="input_text_and" :class="class_texts" autocomplete="off"
-                v-model="request.text_and" placeholder="Enter some words" size="md" />
+                v-model="request.text_and" :placeholder="labels.common.hints" size="md" />
           </b-form-group>
 
-          <b-form-group horizontal label="Exact phrase:" label-class="text-md" label-for="input_text_exact">
+          <b-form-group horizontal :label="labels.advanced.text_exact" label-class="text-md" label-for="input_text_exact">
             <b-form-input id="input_text_exact" :class="class_texts" autocomplete="off" 
-                v-model="request.text_exact" placeholder="Enter some words" size="md" />
+                v-model="request.text_exact" :placeholder="labels.common.hints" size="md" />
           </b-form-group>
 
           <b-form-group horizontal
-                  label="None of these words:" label-class="text-md" label-for="input_text_not">
+                  :label="labels.advanced.text_not" label-class="text-md" label-for="input_text_not">
             <b-form-input id="input_text_not" autocomplete="off" 
-                  v-model="request.text_not"  placeholder="Enter some words" size="md" />
+                  v-model="request.text_not"  :placeholder="labels.common.hints" size="md" />
           </b-form-group>
 
-          <b-form-group horizontal label="Date:" label-class="text-md" label-for="input_date">
+          <b-form-group horizontal :label="labels.advanced.date.label" label-class="text-md" label-for="input_date">
             <b-row id="input_date">
               <b-col md="1">
-                <span>From:</span>
+                <span>{{ labels.advanced.date.from }}</span>
               </b-col>
               <b-col md="5">
                 <b-form-input id="input_date_from" class="el_form_input" autocomplete="off" type="date" size="md"
                     v-model="request.date.from"  />
               </b-col>
               <b-col md="1">
-                <span>To:</span>
+                <span>{{ labels.advanced.date.to }}</span>
               </b-col>
               <b-col md="5">
                 <b-form-input id="input_date_to" class="el_form_input" autocomplete="off" type="date" size="md"
@@ -58,24 +58,24 @@
             </b-row>             
           </b-form-group>
 
-          <b-form-group horizontal label="Results per page:" label-class="text-md-left" label-for="num_results">
+          <b-form-group horizontal :label="labels.advanced.result_per_page" label-class="text-md-left" label-for="num_results">
               <b-form-select id="num_results" v-model="request.max_results" :options="[10,20,50]"  />
           </b-form-group>
 
-          <b-form-group horizontal label="(no relevant data) File type:" label-class="text-md-left">
-              <b-form-select v-model="request.file_type" :options="file_type_options"  disabled />
+          <b-form-group horizontal :label="labels.advanced.file_type.label" label-class="text-md-left">
+              <b-form-select v-model="request.file_type" :options="file_type_options"  disabled/>
           </b-form-group>
 
-          <b-form-group horizontal label="(no relevant data) File size:" label-class="text-md-left">
-                <b-input-group :prepend="request.file_size.gt_text" class="file_size_grp_magrin">
-                  <b-form-input autocomplete="off" v-model="request.file_size.greater_than"  disabled></b-form-input>
+          <b-form-group horizontal :label="labels.advanced.file_size.label" label-class="text-md-left">
+                <b-input-group :prepend="labels.advanced.file_size.greater_kb" class="file_size_grp_magrin">
+                  <b-form-input autocomplete="off" v-model="request.file_size.greater_than" disabled></b-form-input>
                   <b-input-group-append>
                     <b-btn id="gt_kb" variant="outline-success" v-on:click="change_file_size">KB</b-btn>
                     <b-btn id="gt_mb" variant="outline-info" v-on:click="change_file_size">MB</b-btn>
                   </b-input-group-append>
                 </b-input-group>
 
-                <b-input-group :prepend="request.file_size.lt_text" class="file_size_grp_magrin">
+                <b-input-group :prepend="labels.advanced.file_size.less_kb" class="file_size_grp_magrin">
                   <b-form-input autocomplete="off" v-model="request.file_size.less_than"  disabled></b-form-input>
                   <b-input-group-append>
                     <b-btn id="lt_kb" variant="outline-success" v-on:click="change_file_size">KB</b-btn>
@@ -84,8 +84,8 @@
                 </b-input-group>
           </b-form-group>
 
-          <b-form-group horizontal label="(no relevant data) Search scope:" label-class="text-md-left">
-              <b-form-radio-group buttons v-model="request.scope" class="pt-2" :options="scope_options"  disabled/>
+          <b-form-group horizontal :label="labels.advanced.scope.label" label-class="text-md-left">
+              <b-form-radio-group buttons v-model="request.scope" class="pt-2" :options="scope_options" disabled/>
           </b-form-group>
 
           
@@ -116,20 +116,7 @@ export default {
     msg: String
   },
   data() {
-    return {
-      file_type_options: [
-        { text: 'All file types', value: 'all' },
-        { text: 'Text (.txt)', value: 'txt' },
-        { text: 'PDF (.pdf)', value: 'pdf' },
-        { text: 'Microsoft Office Document (.docx/.pptx/.xlsx ...)', value: 'ms' },
-        { text: 'Images (.png/.jpg ...)', value: 'img' },
-        { text: 'Video (.mp4/.mov ...)', value: 'vid' }
-      ],
-      scope_options: [
-        { text: 'All', value: 'all' },
-        { text: 'Content Only', value: 'content' },
-        { text: 'Metadata Only', value: 'meta' }
-      ],
+    return {      
       request: {
         // text
         text_or: null,
@@ -148,8 +135,8 @@ export default {
         file_size: {
           greater_than: null,
           less_than: null,
-          gt_text: "Greater than (KB)",
-          lt_text: "Less than (KB)"
+          // gt_text: this.labels.advanced.file_size.greater_kb,
+          // lt_text: this.labels.advanced.file_size.less_kb
         },
         // other filters
         repository: ["cake", "staff", "student"]
@@ -161,6 +148,26 @@ export default {
     }
   },
   computed: {
+    labels() {
+      return this.$store.state.labels;
+    },
+
+    file_type_options() {
+      return [
+        { text: this.labels.advanced.file_type.all, value: 'all' },
+        { text: this.labels.advanced.file_type.txt, value: 'txt' },
+        { text: this.labels.advanced.file_type.pdf, value: 'pdf' },
+        { text: this.labels.advanced.file_type.ms, value: 'ms' },
+        { text: this.labels.advanced.file_type.img, value: 'img' }
+      ]
+    },
+    scope_options(){
+      return [
+        { text: this.labels.advanced.scope.all, value: 'all' },
+        { text: this.labels.advanced.scope.content, value: 'content' },
+        { text: this.labels.advanced.scope.meta, value: 'meta' }
+      ]
+    },
     class_texts: function() {
       return {
         hasError: this.err_fields.texts
@@ -205,16 +212,16 @@ export default {
     },
     change_file_size: function (evt){
       if (evt.target.id == "gt_kb"){
-        this.request.file_size.gt_text = this.request.file_size.gt_text.replace("MB", "KB")
+        this.request.file_size.gt_text = this.labels.advanced.file_size.greater_kb;
       }
       else if (evt.target.id == "gt_mb"){
-        this.request.file_size.gt_text = this.request.file_size.gt_text.replace("KB", "MB")
+        this.request.file_size.gt_text = this.labels.advanced.file_size.greater_mb;
       }
       else if (evt.target.id == "lt_kb"){
-        this.request.file_size.lt_text = this.request.file_size.lt_text.replace("MB", "KB")
+        this.request.file_size.lt_text = this.labels.advanced.file_size.less_kb;
       }
       else if (evt.target.id == "lt_mb"){
-        this.request.file_size.lt_text = this.request.file_size.lt_text.replace("KB", "MB")
+        this.request.file_size.lt_text = this.labels.advanced.file_size.less_mb;
       }
       
     },

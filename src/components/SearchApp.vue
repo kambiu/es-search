@@ -1,6 +1,16 @@
 <template>
   <div class="search-container">
+    <button v-on:click="debug" hidden>Debug</button>
     <b-container fluid>
+      <b-row align-h="center">
+        <b-col md="4">
+          <b-form-group horizontal
+                  :label="labels.common.language" label-class="text-sm" label-for="display_language">
+            <b-form-select id="display_language" v-model="lang" :options="option_lang" @input="changeLanguage()"></b-form-select>
+          </b-form-group>       
+
+        </b-col>
+      </b-row>
       <b-row align-h="center" align-v="center" class="search_input">
         <b-col md="10">
           <AdvanceSearch v-show="show_advanced_page" @action="advancedAction($event)" />
@@ -39,10 +49,26 @@ export default {
     BasicSearch
   },
   created() {
-  
+    console.log("-----created-----");
+    // for (let lang of appcfg.languages) {
+    //    console.log(lang);
+    // }
+    //TODO load from cookies and set language
+    var cookie_lang = this.$cookies.get("user_language");
+    console.log("lang from cookies: " + cookie_lang);
+    if (cookie_lang){
+      console.log("Set lang to " + cookie_lang);
+      this.$store.dispatch("changeLanguage", cookie_lang);
+      this.lang = cookie_lang;
+    } else{
+      console.log("Set lang to en-us");
+      this.$store.dispatch("changeLanguage", "en-us");
+      this.lang = "en-us";
+    }
   },
   data() {
     return {
+      lang: "en-us",
       show_basic_page: true,
       show_result_page: false,
       show_advanced_page: false,
@@ -51,13 +77,47 @@ export default {
       ],
       search_results: null,
       search_type: ns.searchType.basic,
-      current_query: {}
+      current_query: {},
+      // option_lang: [
+      //   { value: null, text: 'Please select some item' },
+      //   { value: 'a', text: this.labels.name },
+      //   { value: 'b', text: 'Default Selected Option' }
+      // ]
     }
   },
   computed: {
-   
+    option_lang: function() {
+      var ret_arr = []
+      for (let lang of appcfg.languages) {
+        ret_arr.push({
+          "value": lang,
+          "text": lang
+        });
+      }
+      return ret_arr;
+    },
+    // labels: function() {
+    //   var labels_lang = require("../assets/language/" + this.lang + ".json")
+    //   return labels_lang
+    // },
+    labels() {
+      return this.$store.state.labels;
+    },
   },
   methods: {
+    debug() {
+      console.log("----------- debug message -----------");
+      console.log(this.labels);
+    },
+    changeLanguage: function() {
+      console.log("Change to " + this.lang);
+      
+      console.log("Save to cookie user_language" + this.lang);
+      this.$cookies.set("user_language", this.lang, 60 * 60 * 24 * 180); //180 days
+
+      this.$store.dispatch("changeLanguage", this.lang);
+      // console.log(this.labels);
+    },
     showAdvancedSearchPage: function(){
       this.show_result_page = false;
       this.show_basic_page = false;

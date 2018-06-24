@@ -4,11 +4,11 @@
     <div class="link">{{ result._id | build_link }}</div>
     <div class="summary" v-html="joinHighlight(result.highlight.content)"></div>
     <div class="meta">
-      <span>Date: {{ result._source.date_modified }}</span>&nbsp;&nbsp;&nbsp;
-      <span>Active: {{ result._source.active }}</span>&nbsp;&nbsp;&nbsp;
-      <span>Active: {{ result._source.grade }}</span>&nbsp;&nbsp;&nbsp;
-      <span>Age: {{ result._source.age }}</span>&nbsp;&nbsp;&nbsp;
-      <span>Price: {{ result._source.price }}</span>&nbsp;&nbsp;&nbsp;
+      <span>{{labels.custom.display_fields.date}} {{ result._source.date_modified }}</span>&nbsp;&nbsp;&nbsp;
+      <span>{{labels.custom.display_fields.active}} {{ result._source.active }}</span>&nbsp;&nbsp;&nbsp;
+      <span>{{labels.custom.display_fields.grade}} {{ result._source.grade }}</span>&nbsp;&nbsp;&nbsp;
+      <span>{{labels.custom.display_fields.age}} {{ result._source.age }}</span>&nbsp;&nbsp;&nbsp;
+      <span>{{labels.custom.display_fields.price}} {{ result._source.price }}</span>&nbsp;&nbsp;&nbsp;
     </div>
     <!-- <div class="meta">Date: {{ result.date | unix2localtime }}</div>-->
   </div>
@@ -18,6 +18,11 @@
 export default {
   name: 'ResultNormal',
   props: ["result"],
+  computed: {
+    labels() {
+      return this.$store.state.labels;
+    },
+  },
   filters: {
     unix2localtime: function(value){
       var date = new Date(parseInt(value)*1000);

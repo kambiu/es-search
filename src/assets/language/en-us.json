@@ -1,0 +1,77 @@
+{
+  "name": "English",
+  "common": {
+    "hints": "Enter some words",
+    "language": "Language:",
+    "error_empty_field": "Please enter some texts before submitting query"
+  },
+  "basic": {
+    "trend": "Trending Now",
+    "more_option": "More option..."
+  },
+  "advanced": {
+    "submit": "Submit",
+    "reset": "Reset",
+    "text_and": "All of these words:" ,
+    "text_or": "Any of these words:" ,
+    "text_exact": "Exact phrase:",
+    "text_not": "None of these words:",
+    "date": {
+      "label": "Date:",
+      "from": "From:",
+      "to": "To:"
+    },
+    "result_per_page": "Results per page:",
+    "file_type": {
+      "label": "(no relevant data) File type:",
+      "all": "All file types",
+      "txt": "Plain Text (.txt)",
+      "pdf": "PDF (.pdf)",
+      "ms": "Microsoft Office Document (.docx/.pptx/.xlsx ...)",
+      "img": "Images (.png/.jpg ...)"
+    },
+    "file_size": {
+      "label": "(no relevant data) File siez:",
+      "greater_kb": "Greater than (KB)",
+      "less_kb": "Less than (KB)",
+      "greater_mb": "Greater than (MB)",
+      "less_mb": "Less than (MB)"
+    },
+    "scope": {
+      "label": "(no relevant data) Search scope::",
+      "all": "Anywhere",
+      "content": "Content only",
+      "meta": "Metadata only"
+    }
+  },
+  "result": {
+    "hits": "<hits> results (<reponse_time> seconds)",
+    "sort_by": {
+      "label": "Sort by:",
+      "score": "Relevance",
+      "date": "Date"
+    },
+    "pagination": {
+      "next_page": "Next",
+      "previous_page": "<",
+      "first_page": "<<",
+      "last_page": ">>"
+    },
+    "history": "Search History:",
+    "clear_filter": "Clear all filters"
+  },
+  "custom": {
+    "filter": {
+      "grade": "Grade Filtering",
+      "age": "Age Filtering",
+      "price": "Price Filtering"
+    },
+    "display_fields": {
+      "date": "Date: ",
+      "active": "Active: ",
+      "age": "Age: ",
+      "price": "Price: "
+    }
+  }  
+
+}

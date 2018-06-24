@@ -1,0 +1,77 @@
+{
+  "name": "中文 (繁)",
+  "common": {
+    "hints": "輸入相關字詞",
+    "language": "語言",
+    "error_empty_field": "請先輸入相關字詞"
+  },
+  "basic": {
+    "trend": "熱門",
+    "more_option": "更多搜索設定..."
+  },
+  "advanced": {
+    "submit": "提交",
+    "reset": "重設",
+    "text_and": "含以下所有字詞:" ,
+    "text_or": "含以下任何字詞:" ,
+    "text_exact": "與以下字詞或語句完全相符:",
+    "text_not": "不含以下任何字詞:",
+    "date": {
+      "label": "日期:",
+      "from": "由:",
+      "to": "到:"
+    },
+    "result_per_page": "每頁搜尋結果:",
+    "file_type": {
+      "label": "(不適用) 文件類型:",
+      "all": "所有文件類型",
+      "txt": "文字文檔 (.txt)",
+      "pdf": "PDF 文檔 (.pdf)",
+      "ms": "Microsoft Office 文檔 (.docx/.pptx/.xlsx ...)",
+      "img": "圖片 (.png/.jpg ...)"
+    },
+    "file_size": {
+      "label": "(不適用) 文件大小:",
+      "greater_kb": "大於 (KB)",
+      "less_kb": "小於 (KB)",
+      "greater_mb": "大於 (MB)",
+      "less_mb": "小於 (MB)"
+    },
+    "scope": {
+      "label": "(不適用) 搜索範圍:",
+      "all": "任何地方",
+      "content": "只限文件內容",
+      "meta": "只限文件元數據"
+    }
+  },
+  "result": {
+    "hits": "<hits> 結果 (<reponse_time> 秒)",
+    "sort_by": {
+      "label": "根據排序:",
+      "score": "相關度",
+      "date": "日期"
+    },
+    "pagination": {
+      "next_page": "下一頁",
+      "previous_page": "<",
+      "first_page": "<<",
+      "last_page": ">>"
+    },
+    "history": "搜索歷史:",
+    "clear_filter": "清除重有篩選條件"
+  },
+  "custom": {
+    "filter": {
+      "grade": "評級:",
+      "age": "年齡:",
+      "price": "價錢:"
+    },
+    "display_fields": {
+      "date": "日期: ",
+      "active": "活動狀態: ",
+      "age": "年齡: ",
+      "price": "價錢: "
+    }
+  }  
+
+}

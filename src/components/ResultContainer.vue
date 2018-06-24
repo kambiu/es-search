@@ -7,7 +7,7 @@
             <ResponseInfo :time="searchResults.took" :hits="searchResults.hits.total" />
           </b-col>
           <b-col>
-            <b-form-group horizontal label="Sort by:" label-class="text-md-left" label-for="num_results">
+            <b-form-group horizontal :label="labels.result.sort_by.label" label-class="text-md-left" label-for="num_results">
               <b-form-select v-model="result_sort_by" :options="sortby_options" @input="changeSorting()"  />
             </b-form-group>
           </b-col>
@@ -34,7 +34,7 @@
         v-show="searchResults.hits.total != 0"
         v-model="currentPage" 
         v-on:input="pageSearch(currentPage)" 
-        next-text="Next" />
+        :next-text="labels.result.pagination.next_page" />
     </b-row>
   </div>
 </template>
@@ -50,15 +50,20 @@ export default {
   name: 'ResultContainer',
   data() {
     return {
-      currentPage: 1,
-      sortby_options: [
-        { value: "_score", text: "Relevance" },
-        { value: "date_modified", text: "Modified date" },
-      ],
+      currentPage: 1,      
       result_sort_by: "_score"
     }
   },
   computed: {
+    labels() {
+      return this.$store.state.labels;
+    },
+    sortby_options() {
+      return [
+        { value: "_score", text: this.labels.result.sort_by.score },
+        { value: "date_modified", text: this.labels.result.sort_by.date },
+      ]
+    },
     numPage: function() {
       return Math.ceil(this.searchResults.hits.total * 1.0 / this.pageSize);
     }
