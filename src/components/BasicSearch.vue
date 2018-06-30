@@ -47,7 +47,8 @@
 </template>
 
 <script>
-import ns from '../utils/NameSpace.js'
+// import ns from '../utils/NameSpace.js'
+import appcfg from '../config.js'
 
 export default {
   name: 'BasicSearch',
@@ -57,19 +58,21 @@ export default {
   data() {
     return {
       request: {
-        // text
         text: ""
       },
       err_text: false,
-      err_message: "",
-      trends: [
-        "111", "222", "333"
-      ]
+      err_message: ""
     }
   },
   computed: {
     labels() {
       return this.$store.state.labels;
+    },
+    basic_request() {
+      return this.$store.state.baisc_request;
+    },
+    trends() {
+      return this.$store.state.trends;
     },
     class_text: function(){
       return {
@@ -85,16 +88,55 @@ export default {
   methods: {
     onSubmit: function(submit_text) {
       if (typeof submit_text === 'string' || submit_text instanceof String){
-        this.request.text=submit_text;
+        this.request.text = submit_text;
       }
 
       var isValid = this.basicSearchValidation();
-      if (isValid)
-        this.$emit("action", {action: ns.basicAction.search, query: this.request});
-        
+      if (isValid) {
+        console.log("submit_text: " + this.request.text);
+        var payload = {
+          query: {
+            bool: {
+              must: [
+                { 
+                  query_string: {
+                    default_field : "content",
+                    query : this.request.text
+                  }
+                }
+              ],
+              must_not: [],
+              filter: []
+            }
+          }
+        }
+
+        /* Start aggregation */ 
+        payload.aggs = {}
+
+        //terms
+        for (let field of appcfg.search.aggregation.terms_fields) {
+          payload.aggs["terms_" + field] = {
+            "terms": { "field": field }
+          }
+        }
+
+        //range
+        for (let obj of appcfg.search.aggregation.range_fields) {
+          payload.aggs["ranges_" + obj.field_name] = {
+            "range": {
+              "field": obj.field_name,
+              "ranges": obj.groups
+            }
+          }
+        }
+
+        this.$store.dispatch("updateSearchHistory", this.request.text);
+        this.$store.dispatch("doBasicSearch", payload);
+      }        
     },
     onAdvacnedOption: function() {
-      this.$emit("action", {action: ns.basicAction.showAdvancedPage});
+      this.$store.dispatch("showAdvancedSearchPage");
     },
     basicSearchValidation: function() {
 

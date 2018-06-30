@@ -15,7 +15,6 @@
         <ResultNormal v-for="item in searchResults.hits.hits" :result="item" :key="item._id" />
       </b-col>
       <b-col sm="3" id="right-panel">
-        <!-- for multiple filter -->
         <ResultRightPanel 
           @action="rightPanelAction($event)"
           :searchHistory="searchHistory"
@@ -26,7 +25,6 @@
     </b-row>
     <button class="hidden" v-on:click="debug">Debug</button>
     <b-row align-h="center" id="pageNavigation">
-      <!--<b-pagination-nav :link-gen="linkGen" :number-of-pages="10" v-model="currentPage" />-->
       <b-pagination-nav 
         base-url="#" 
         :limit="10" 
@@ -66,11 +64,14 @@ export default {
     },
     numPage: function() {
       return Math.ceil(this.searchResults.hits.total * 1.0 / this.pageSize);
+    },
+    searchResults() {
+      return this.$store.state.es_response;
     }
   },
   props: [
     "searchHistory",
-    "searchResults",
+    // "searchResults",
     "pageSize",
     "resultFiltered",
   ],    
@@ -81,7 +82,7 @@ export default {
   },
   methods: {
     debug: function(){
-      console.log(this.result_sort_by);
+      // console.log(this.result_sort_by);
     },
     // historySearch: function(text_history) {
     //   // this.$emit("action", {text: text_history});
@@ -103,7 +104,8 @@ export default {
     }
   },
   created(){
-
+    console.log("Result Container entered");
+    console.log(this.searchResults);
   }
 }
 

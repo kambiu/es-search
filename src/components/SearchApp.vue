@@ -13,19 +13,14 @@
       </b-row>
       <b-row align-h="center" align-v="center" class="search_input">
         <b-col md="10">
-          <AdvanceSearch v-show="show_advanced_page" @action="advancedAction($event)" />
-          <BasicSearch v-show="show_basic_page"  @action="basicAction($event)" />          
+          <AdvanceSearch v-if="layout.show_advanced_search_page" @action="advancedAction($event)" />
+          <BasicSearch v-if="layout.show_basic_search_page" />          
         </b-col>
       </b-row>
       <transition name="fade">
-        <b-row align-h="center" align-v="center" class="search_result" v-if="show_result_page">
+        <b-row align-h="center" align-v="center" class="search_result" v-if="layout.show_result_page">
           <b-col md="10">
-            <ResultContainer 
-                :pageSize="current_query.size"
-                :searchHistory="list_search_history" 
-                :searchResults="search_results" 
-                :resultFiltered="(this.current_query.query.bool.filter.length > 0)"
-                @action="resultAction($event)" />
+            <ResultContainer  />
           </b-col>
         </b-row>
       </transition>
@@ -65,13 +60,16 @@ export default {
       this.$store.dispatch("changeLanguage", "en-us");
       this.lang = "en-us";
     }
+    console.log("this.show_basic_search_page: " + this.layout.show_basic_search_page);
+    console.log("this.show_advanced_search_page: " + this.layout.show_advanced_search_page);
+    console.log("this.show_result_page: " + this.layout.show_result_page);
   },
   data() {
     return {
       lang: "en-us",
-      show_basic_page: true,
-      show_result_page: false,
-      show_advanced_page: false,
+      // show_basic_page: true,
+      // show_result_page: false,
+      // show_advanced_page: false,
       list_search_history: [
         "Cras justo odio", "Dapibus ac facilisis in", "Morbi leo risus", "Porta ac consectetur ac", "Vestibulum at eros"
       ],
@@ -103,6 +101,9 @@ export default {
     labels() {
       return this.$store.state.labels;
     },
+    layout() {
+      return this.$store.state.layout;
+    }
   },
   methods: {
     debug() {
@@ -118,31 +119,28 @@ export default {
       this.$store.dispatch("changeLanguage", this.lang);
       // console.log(this.labels);
     },
-    showAdvancedSearchPage: function(){
-      this.show_result_page = false;
-      this.show_basic_page = false;
-      this.show_advanced_page = true;
-    },
-    showResultPage: function(){
-      this.show_result_page = true;
-      this.show_basic_page = true;
-      this.show_advanced_page = false;
-    },
+    // showAdvancedSearchPage: function(){
+    //   this.show_result_page = false;
+    //   this.show_basic_page = false;
+    //   this.show_advanced_page = true;
+    // },
+    // showResultPage: function(){
+    //   this.show_result_page = true;
+    //   this.show_basic_page = true;
+    //   this.show_advanced_page = false;
+    // },
     /* actions for basic search page */
-    basicAction: function(event) {
-      if (event.action == ns.basicAction.search) {
-        console.log("search action in basicAction()");
-        this.search_type = ns.searchType.basic
-        console.log(event.query);
-        this.resetInputBoxValue(); // this is a new search
-        this.updateSearchHistory(ns.searchType.basic, event.query);
-        this.parseQueryLoadResult(ns.searchType.basic, event.query);
+    // basicAction: function(event) {
+    //   if (event.action == ns.basicAction.search) {
+    //     console.log("search action in basicAction()");
+    //     this.search_type = ns.searchType.basic
+    //     console.log(event.query);
+    //     this.resetInputBoxValue(); // this is a new search
+    //     this.updateSearchHistory(ns.searchType.basic, event.query);
+    //     this.parseQueryLoadResult(ns.searchType.basic, event.query);
         
-      } else if (event.action == ns.basicAction.showAdvancedPage) {
-        console.log("show advanced action in basicAction()");
-        this.showAdvancedSearchPage();
-      }      
-    },
+    //   }    
+    // },
     /* actions from advanced search page */
     advancedAction: function(event) {
       console.log("search action in advancedAction()");
@@ -197,38 +195,38 @@ export default {
         this.queryLoadResult();
       }
     },
-    updateSearchHistory: function(searchType, query){
-      console.log("searchType in updateSearchHistory(): " + searchType)
-      var text_submitted = "";
-      if (searchType == ns.searchType.basic)
-        text_submitted = query.text;
-      else if (searchType == ns.searchType.advanced)
-        if (query.text_or)
-          text_submitted += "+OR(" +query.text_or+ ")"
-        if (query.text_and)
-          text_submitted += "+AND(" +query.text_and+ ")"
-        if (query.text_exact)
-          text_submitted += "+EXACT(" +query.text_exact+ ")"
-        if (query.text_not)
-          text_submitted += "+NOT(" +query.text_not+ ")"
+    // updateSearchHistory: function(searchType, query){
+    //   console.log("searchType in updateSearchHistory(): " + searchType)
+    //   var text_submitted = "";
+    //   if (searchType == ns.searchType.basic)
+    //     text_submitted = query.text;
+    //   else if (searchType == ns.searchType.advanced)
+    //     if (query.text_or)
+    //       text_submitted += "+OR(" +query.text_or+ ")"
+    //     if (query.text_and)
+    //       text_submitted += "+AND(" +query.text_and+ ")"
+    //     if (query.text_exact)
+    //       text_submitted += "+EXACT(" +query.text_exact+ ")"
+    //     if (query.text_not)
+    //       text_submitted += "+NOT(" +query.text_not+ ")"
 
-      console.log(text_submitted);
-      //updat ehistory
-      this.list_search_history.unshift(text_submitted);    
-      this.list_search_history = this.list_search_history.slice(0, 5);          
-    },
-    resetInputBoxValue: function() {
-      this.current_query = {};
-      this.current_query.from = 0;
-      this.current_query.size = 10;
-      this.current_query.source = {excludes: ["content"] };
-      this.current_query.highlight = { fields: { content: {} } };
-      this.current_query.sort = "_score";
-      this.current_query.query = null;
-      // var q_scope = "";
-      this.current_query.index = "*";
-      this.current_query.aggs = null;
-    },
+    //   console.log(text_submitted);
+    //   //updat ehistory
+    //   this.list_search_history.unshift(text_submitted);    
+    //   this.list_search_history = this.list_search_history.slice(0, 5);          
+    // },
+    // resetInputBoxValue: function() {
+    //   this.current_query = {};
+    //   this.current_query.from = 0;
+    //   this.current_query.size = 10;
+    //   this.current_query.source = {excludes: ["content"] };
+    //   this.current_query.highlight = { fields: { content: {} } };
+    //   this.current_query.sort = "_score";
+    //   this.current_query.query = null;
+    //   // var q_scope = "";
+    //   this.current_query.index = "*";
+    //   this.current_query.aggs = null;
+    // },
     parseQueryLoadResult: function(searchType, query) {
       this.parseQuery(searchType, query);
       this.queryLoadResult();
@@ -386,11 +384,13 @@ export default {
           sort: this.current_query.sort,
           aggs: this.current_query.aggs
         }
-      }).then(function (body) {        
+      }).then(function (body) {
+        console.log(">> return: " + body)
         me.search_results = body;
          // toggle component display
         //  console.log("Return >>>>>> " + JSON.stringify(body))
-        me.showResultPage();
+        // me.showResultPage();
+        this.$store.dispatch("showResultPage");
       }, function (error) {
         console.error(error.message);
         console.log(">>>>>>>>>>>>>>>>> Error made <<<<<<<<<<<<<<<<<<");
