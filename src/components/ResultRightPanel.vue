@@ -1,6 +1,7 @@
 <template>
   <div>
     <!-- aggs term -->
+    <button v-on:click="debug">Debug</button>
     <div v-for="(item, index) in arr_terms_filter" :key="'term_' + index"> 
       <div>{{ item.display_name }}</div>
       <div>
@@ -24,7 +25,7 @@
       <br />
     </div>
 
-    <b-button style="width: 100%;" v-if="resultFiltered" v-on:click="filterClear()">
+    <b-button style="width: 100%;" v-if="isFiltered" v-on:click="filterClear()">
       {{ labels.result.clear_filter }}
     </b-button>
 
@@ -42,18 +43,28 @@
 
 <script>
 
-import ns from '../utils/NameSpace.js'
+import SearchUtils from '../utils/SearchUtils'
+
 
 export default {
   name: 'ResultRightPanel',
   data() {
     return {
-      filtered: false
+      isFiltered: false
     }
   },
   computed: {
     labels() {
       return this.$store.state.labels;
+    },
+    searchHistory() {
+      return this.$store.state.list_search_history;
+    },
+    isResultFiltered() {
+      return this.$store.getters.isResultFiltered;
+    },
+    aggregations() {
+      return this.$store.getters.result_aggs;
     },
     arr_terms_filter: function() {
       var arr_terms = [];
@@ -102,16 +113,24 @@ export default {
     }
   },
   props: [
-    "searchHistory",
-    "aggregations",
-    "resultFiltered"
+    // "searchHistory",
+    // "aggregations",
+    // "resultFiltered"
   ],    
   components: {
 
   },
   methods: {
-    historySearch: function(text_history) {
-      this.$emit("action", {action: ns.resultAction.doBasicSearch, query: {text: text_history}});
+    debug(){
+      console.log("[debug] this.isFiltered " + this.isFiltered);
+    },
+    historySearch: function(text) {
+      console.log("historySearch: " + text);
+      var payload = {}
+      payload.query = SearchUtils.getBasicSearchQuery(text);
+      payload.aggs = SearchUtils.getAggregations();
+      this.$store.dispatch("updateSearchHistory", text);
+      this.$store.dispatch("doBasicSearch", payload);
     },
     filterSearchTerms: function(field_name, field_value) {
       console.log("filterSearchTerms:", field_name, field_value);
@@ -119,8 +138,9 @@ export default {
         term: {}
       }
       terms_filter.term[field_name] = field_value
-
-      this.$emit("action", {action: ns.resultAction.filterSearch, filter: terms_filter});
+      this.isFiltered = true;
+      this.$store.dispatch("addFilter", terms_filter);
+      // this.$emit("action", {action: ns.resultAction.filterSearch, filter: terms_filter});
     },
     filterSearchRanges: function(field_name, from, to) {
       console.log("filterSearchRanges: ", field_name, from, to);
@@ -134,17 +154,18 @@ export default {
       if (to) {
         ranges_filter.range[field_name].lt = to;
       }
-      this.$emit("action", {action: ns.resultAction.filterSearch, filter: ranges_filter});
+      this.isFiltered = true;
+      this.$store.dispatch("addFilter", ranges_filter);
+      // this.$emit("action", {action: ns.resultAction.filterSearch, filter: ranges_filter});
     },
     filterClear: function() {
-      console.log("ResultRightPanel - Clear result")
-      this.$emit("action", {action: ns.resultAction.clearFilter});
+      this.isFiltered = false;
+      this.$store.dispatch("clearFilter");
     }
   },
   created() {
-    console.log("return >>: " + JSON.stringify(this.aggregations));
-    console.log("arr_ranges_filter >>: " + JSON.stringify(this.arr_ranges_filter));
-    console.log("rifhtpanel:", this.resultFiltered)
+    console.log("RightPanel created ==>");
+    console.log("rightpanel filtered?", this.isResultFiltered)
   }
 }
 

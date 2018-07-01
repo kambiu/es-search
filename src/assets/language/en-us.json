@@ -45,7 +45,7 @@
     }
   },
   "result": {
-    "hits": "<hits> results (<reponse_time> seconds)",
+    "hits": "<hits> results (<response_time> seconds)",
     "sort_by": {
       "label": "Sort by:",
       "score": "Relevance",

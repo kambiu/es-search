@@ -29,7 +29,31 @@ export const store = new Vuex.Store({
   },
   getters: {
     list_result: state => {
-      return state.es_response.hits.hits
+      return state.es_response.hits.hits;
+    },
+    result_response_time: state => {
+      return state.es_response.took;
+    },
+    result_hits: state => {
+      return parseInt(state.es_response.hits.total);
+    },
+    result_aggs: state => {
+      return state.es_response.aggregations;
+    },
+    page_size: state=> {
+      return parseInt(state.current_request.size);
+    },
+    current_page: state=> {
+      return parseInt(state.current_request.from / state.current_request.size) + 1;
+    },
+    isResultFiltered: state=> {
+      if (state.current_request.query.bool.filter.length && state.current_request.query.bool.filter.length > 0)
+        return true;
+      else
+        return false;
+    },
+    filters: state=> {
+      return state.current_request.query.bool.filter;
     }
   },
   mutations: {
@@ -77,6 +101,18 @@ export const store = new Vuex.Store({
     updateCurrentRequestAggs(state, updatedAggs) {
       state.current_request.aggs = updatedAggs;
     },
+    updateFrom(state, updatedStartFromResult) {
+      state.current_request.from = updatedStartFromResult;
+    },
+    updateSorting(state, updateSort) {
+      state.current_request.sort = updateSort;
+    },
+    addFilter(state, filter) {
+      state.current_request.query.bool.filter.push(filter);
+    },
+    clearFilter(state) {
+      state.current_request.query.bool.filter = [];
+    }
   },
 
   // actions start here ...
@@ -87,11 +123,9 @@ export const store = new Vuex.Store({
       context.commit("changeLanguage", new_labels);
     },
     doBasicSearch(context, payload) {
-
       console.log("store action: doBasicSearch() = > received payload {");
-      console.log(payload);
+      console.log(JSON.stringify(payload));
       context.commit("resetCurrentRequest");
-
       context.commit("updateCurrentRequestQuery", payload.query)
       context.commit("updateCurrentRequestAggs", payload.aggs)
       context.dispatch("queryLoadResult");
@@ -135,7 +169,7 @@ export const store = new Vuex.Store({
       new_list.unshift(new_text);
       context.commit("updateSearchHistory", new_list.slice(0, 5));
     },
-    queryLoadResult: function(context){
+    queryLoadResult: function(context) {
       // submit text to elatsicsearch
       // console.log(this.current_request);
       console.log("Submitting search  -------------------->>");
@@ -165,6 +199,41 @@ export const store = new Vuex.Store({
       });
 
       console.log("end parseAndSendQuery ---------------");
+    },
+    changePage: function(context, payload) {
+      console.log("changePage() to page " + payload);
+      var start_from_result = (payload - 1) * context.getters.page_size;
+      console.log("start_from_result: " + start_from_result)
+      context.commit("updateFrom", start_from_result);
+      context.dispatch("queryLoadResult");
+    },
+    changeSorting: function(context, payload) {
+
+      console.log("changeSorting() to " + payload);
+
+      var new_sort = null;
+      if (payload.includes("date")) {
+        new_sort = {}
+        new_sort[payload] = { order: "desc" }
+      } else {
+        new_sort = payload;
+      }
+
+      context.commit("updateSorting", new_sort);
+      context.commit("updateFrom", 0);
+      context.dispatch("queryLoadResult");
+
+    },
+    addFilter: function(context, payload) {
+      console.log("addFilter");
+      context.commit("updateFrom", 0);
+      context.commit("addFilter", payload);
+      context.dispatch("queryLoadResult");
+    },
+    clearFilter: function(context) {
+      console.log("clearFilter");
+      context.commit("clearFilter");
+      context.dispatch("queryLoadResult");
     }
   }
 })

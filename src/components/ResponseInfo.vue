@@ -8,13 +8,19 @@
 <script>
 export default {
   name: 'ResponseInfo',
-  props: ["time", "hits"],
+  // props: ["time", "hits"],
   computed: {
     labels() {
       return this.$store.state.labels;
     },
+    result_response_time() {
+      return this.$store.getters.result_response_time;
+    },
+    result_hits() {
+      return this.$store.getters.result_hits;
+    },
     reponse_string() {
-      return this.labels.result.hits.replace("<hits>", this.hits).replace("<reponse_time>", this.toSecond(this.time))
+      return this.labels.result.hits.replace("<hits>", this.result_hits).replace("<response_time>", this.toSecond(this.result_response_time))
     }
   },
   methods: {

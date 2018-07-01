@@ -48,7 +48,8 @@
 
 <script>
 // import ns from '../utils/NameSpace.js'
-import appcfg from '../config.js'
+//import appcfg from '../config.js'
+import SearchUtils from '../utils/SearchUtils'
 
 export default {
   name: 'BasicSearch',
@@ -94,42 +95,10 @@ export default {
       var isValid = this.basicSearchValidation();
       if (isValid) {
         console.log("submit_text: " + this.request.text);
-        var payload = {
-          query: {
-            bool: {
-              must: [
-                { 
-                  query_string: {
-                    default_field : "content",
-                    query : this.request.text
-                  }
-                }
-              ],
-              must_not: [],
-              filter: []
-            }
-          }
-        }
-
-        /* Start aggregation */ 
-        payload.aggs = {}
-
-        //terms
-        for (let field of appcfg.search.aggregation.terms_fields) {
-          payload.aggs["terms_" + field] = {
-            "terms": { "field": field }
-          }
-        }
-
-        //range
-        for (let obj of appcfg.search.aggregation.range_fields) {
-          payload.aggs["ranges_" + obj.field_name] = {
-            "range": {
-              "field": obj.field_name,
-              "ranges": obj.groups
-            }
-          }
-        }
+        
+        var payload = {}
+        payload.query = SearchUtils.getBasicSearchQuery(this.request.text);
+        payload.aggs = SearchUtils.getAggregations(); 
 
         this.$store.dispatch("updateSearchHistory", this.request.text);
         this.$store.dispatch("doBasicSearch", payload);

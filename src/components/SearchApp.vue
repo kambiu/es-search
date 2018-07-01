@@ -94,10 +94,6 @@ export default {
       }
       return ret_arr;
     },
-    // labels: function() {
-    //   var labels_lang = require("../assets/language/" + this.lang + ".json")
-    //   return labels_lang
-    // },
     labels() {
       return this.$store.state.labels;
     },
@@ -150,49 +146,49 @@ export default {
       this.parseQueryLoadResult(ns.searchType.advanced, event.query);
     },
     /* actions from results */
+    //TODO to remove resultAction 
     resultAction: function(event) {
       if (event.action == ns.resultAction.changePage) {
         console.log("change page to ..." + event.query.page)
-        //no reset, no update history
-        this.current_query.from = (event.query.page - 1) * this.current_query.size;
-        console.log("this.current_query.from: " + this.current_query.from)
-        this.queryLoadResult();
+        // this.current_query.from = (event.query.page - 1) * this.current_query.size;
+        // console.log("this.current_query.from: " + this.current_query.from)
+        // this.queryLoadResult();
 
       } else if (event.action == ns.resultAction.doBasicSearch) {
-        this.search_type = ns.searchType.basic;
-        this.resetInputBoxValue(); // this is a new search
-        this.updateSearchHistory(ns.searchType.basic, event.query);
-        this.parseQueryLoadResult(ns.searchType.basic, event.query);
+        // this.search_type = ns.searchType.basic;
+        // this.resetInputBoxValue(); // this is a new search
+        // this.updateSearchHistory(ns.searchType.basic, event.query);
+        // this.parseQueryLoadResult(ns.searchType.basic, event.query);
 
       } 
       else if (event.action == ns.resultAction.changeSorting) {
 
-        if (event.query.sort.includes("date")) {
-          console.log("ES^--->>")
-          this.current_query.sort = {}
-          this.current_query.sort[event.query.sort] = {
-            order: "desc"
-          }
+        // if (event.query.sort.includes("date")) {
+        //   console.log("ES^--->>")
+        //   this.current_query.sort = {}
+        //   this.current_query.sort[event.query.sort] = {
+        //     order: "desc"
+        //   }
 
-          // event.query.sort = { sort_field_name: { order: "desc" } }
-        } else {
-          this.current_query.sort = event.query.sort;
-        }        
-        this.current_query.from = 0;
-        console.log("this.current_query.sort: " + this.current_query.sort)
-        this.queryLoadResult();
+        //   // event.query.sort = { sort_field_name: { order: "desc" } }
+        // } else {
+        //   this.current_query.sort = event.query.sort;
+        // }        
+        // this.current_query.from = 0;
+        // console.log("this.current_query.sort: " + this.current_query.sort)
+        // this.queryLoadResult();
 
       } else if (event.action == ns.resultAction.filterSearch) {
-        console.log("Filter sth: " + event.filter);
-        // console.log("Filter sth: " + event.filter.field_name + " > " + event.filter.field_value);
-        this.current_query.from = 0;
-        this.current_query.query.bool.filter.push(event.filter);
-        this.queryLoadResult();
+        // console.log("Filter sth: " + event.filter);
+        // // console.log("Filter sth: " + event.filter.field_name + " > " + event.filter.field_value);
+        // this.current_query.from = 0;
+        // this.current_query.query.bool.filter.push(event.filter);
+        // this.queryLoadResult();
 
       } else if (event.action == ns.resultAction.clearFilter) {
-        this.current_query.from = 0;
-        this.current_query.query.bool.filter = [];
-        this.queryLoadResult();
+        // this.current_query.from = 0;
+        // this.current_query.query.bool.filter = [];
+        // this.queryLoadResult();
       }
     },
     // updateSearchHistory: function(searchType, query){

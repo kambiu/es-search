@@ -45,7 +45,7 @@
     }
   },
   "result": {
-    "hits": "<hits> 结果 (<reponse_time> 秒)",
+    "hits": "<hits> 结果 (<response_time> 秒)",
     "sort_by": {
       "label": "根据排序:",
       "score": "相关度",
