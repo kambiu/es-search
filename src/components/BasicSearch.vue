@@ -69,9 +69,6 @@ export default {
     labels() {
       return this.$store.state.labels;
     },
-    basic_request() {
-      return this.$store.state.baisc_request;
-    },
     trends() {
       return this.$store.state.trends;
     },

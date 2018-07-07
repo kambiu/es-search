@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- aggs term -->
-    <button v-on:click="debug">Debug</button>
+    <button class="hidden" v-on:click="debug">Debug</button>
     <div v-for="(item, index) in arr_terms_filter" :key="'term_' + index"> 
       <div>{{ item.display_name }}</div>
       <div>
@@ -111,24 +111,21 @@ export default {
 
       return arr_ranges;
     }
-  },
-  props: [
-    // "searchHistory",
-    // "aggregations",
-    // "resultFiltered"
-  ],    
+  }, 
   components: {
 
   },
   methods: {
     debug(){
       console.log("[debug] this.isFiltered " + this.isFiltered);
+
     },
     historySearch: function(text) {
       console.log("historySearch: " + text);
       var payload = {}
       payload.query = SearchUtils.getBasicSearchQuery(text);
       payload.aggs = SearchUtils.getAggregations();
+      this.isFiltered = false;
       this.$store.dispatch("updateSearchHistory", text);
       this.$store.dispatch("doBasicSearch", payload);
     },
@@ -165,7 +162,6 @@ export default {
   },
   created() {
     console.log("RightPanel created ==>");
-    console.log("rightpanel filtered?", this.isResultFiltered)
   }
 }
 

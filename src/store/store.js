@@ -17,15 +17,22 @@ export const store = new Vuex.Store({
     list_search_history: [
       "Cras justo odio", "Dapibus ac facilisis in", "Morbi leo risus", "Porta ac consectetur ac", "Vestibulum at eros"
     ],
-    //TODO
-    current_request: {},
     es_response: null,
     err: {
       fields: {
         texts: false
       },
       message: ""
-    }
+    },
+    // current_request: flatten structure
+    cr_from: 0,
+    cr_size: 10,
+    cr_source: {excludes: ["content"] },
+    cr_highlight: { fields: { content: {} } },
+    cr_sort: "_score",
+    cr_query: null,
+    cr_index: "*",
+    cr_aggs: null
   },
   getters: {
     list_result: state => {
@@ -41,77 +48,67 @@ export const store = new Vuex.Store({
       return state.es_response.aggregations;
     },
     page_size: state=> {
-      return parseInt(state.current_request.size);
+      return parseInt(state.cr_size);
     },
     current_page: state=> {
-      return parseInt(state.current_request.from / state.current_request.size) + 1;
-    },
-    isResultFiltered: state=> {
-      if (state.current_request.query.bool.filter.length && state.current_request.query.bool.filter.length > 0)
-        return true;
-      else
-        return false;
-    },
-    filters: state=> {
-      return state.current_request.query.bool.filter;
+      var from = parseInt(state.cr_from);
+      var size = parseInt(state.cr_size);
+      var page = (from / size) + 1;
+      return page;
     }
   },
   mutations: {
     changeLanguage (state, new_labels) {
       state.labels = new_labels;
     },
-    changeBasicRequest(state, new_request) {
-      state.baisc_request = new_request;
-    },
-    changeAdvancedRequest(state, new_request) {
-      state.advanced_request = new_request;
-    },
     updateESResponse(state, updated_response) {
       state.es_response = updated_response;
     },
     changeShowBasicSearchPage(state, display) {
-      console.log("changeShowBasicSearchPage: " + display);
+      //console.log("changeShowBasicSearchPage: " + display);
       state.layout.show_basic_search_page = display;
     },
     changeShowAdvancedSearchPage(state, display) {
-      console.log("changeShowAdvancedSearchPage: " + display);
+      //console.log("changeShowAdvancedSearchPage: " + display);
       state.layout.show_advanced_search_page = display;
     },
     changeShowResultPage(state, display) {
-      console.log("changeShowResultPage: " + display);
+      //console.log("changeShowResultPage: " + display);
       state.layout.show_result_page = display;
     },
     resetCurrentRequest(state) {
-      state.current_request = {};
-      state.current_request.from = 0;
-      state.current_request.size = 10;
-      state.current_request.source = {excludes: ["content"] };
-      state.current_request.highlight = { fields: { content: {} } };
-      state.current_request.sort = "_score";
-      state.current_request.query = null;
-      state.current_request.index = "*";
-      state.current_request.aggs = null;
+      state.cr_from = 0;
+      state.cr_size = 10;
+      state.cr_source = {excludes: ["content"] };
+      state.cr_highlight = { fields: { content: {} } };
+      state.cr_sort = "_score";
+      state.cr_query = null;
+      state.cr_index = "*";
+      state.cr_aggs = null;
     },
     updateSearchHistory(state, history) {
       state.list_search_history = history;
     },
     updateCurrentRequestQuery(state, updatedQuery) {
-      state.current_request.query = updatedQuery;
+      state.cr_query = updatedQuery;
     },
     updateCurrentRequestAggs(state, updatedAggs) {
-      state.current_request.aggs = updatedAggs;
+      state.cr_aggs = updatedAggs;
     },
     updateFrom(state, updatedStartFromResult) {
-      state.current_request.from = updatedStartFromResult;
+      state.cr_from = updatedStartFromResult;
     },
     updateSorting(state, updateSort) {
-      state.current_request.sort = updateSort;
+      state.cr_sort = updateSort;
     },
     addFilter(state, filter) {
-      state.current_request.query.bool.filter.push(filter);
+      state.cr_query.bool.filter.push(filter);
     },
     clearFilter(state) {
-      state.current_request.query.bool.filter = [];
+      state.cr_query.bool.filter = [];
+    },
+    updatePageSize(state, updateSize) {
+      state.cr_size = parseInt(updateSize);
     }
   },
 
@@ -123,11 +120,22 @@ export const store = new Vuex.Store({
       context.commit("changeLanguage", new_labels);
     },
     doBasicSearch(context, payload) {
-      console.log("store action: doBasicSearch() = > received payload {");
+      console.log("store action: doBasicSearch() = > received payload ...");
       console.log(JSON.stringify(payload));
       context.commit("resetCurrentRequest");
       context.commit("updateCurrentRequestQuery", payload.query)
       context.commit("updateCurrentRequestAggs", payload.aggs)
+      context.dispatch("queryLoadResult");
+    },
+    doAdvancedSearch(context, payload) {
+      console.log("store action: doAdvancedSearch() = > received payload ...");
+      console.log(JSON.stringify(payload));
+      context.commit("resetCurrentRequest");
+      
+      // context.commit("updateIndex", payload.index);
+      context.commit("updatePageSize", payload.size);
+      context.commit("updateCurrentRequestQuery", payload.query);
+      context.commit("updateCurrentRequestAggs", payload.aggs);
       context.dispatch("queryLoadResult");
     },
     showAdvancedSearchPage: function(context) {
@@ -172,20 +180,20 @@ export const store = new Vuex.Store({
     queryLoadResult: function(context) {
       // submit text to elatsicsearch
       // console.log(this.current_request);
-      console.log("Submitting search  -------------------->>");
+      console.log("queryLoadResult ---->>");
 
-      console.log(context.state.current_request);
+      // console.log(context.state.current_request);
       // var me = this; /* important , callback functino cannot access to this variable*/
       esclient.search({
-        index: context.state.current_request.index,
+        index: context.state.cr_index,
         body: {
-          from: context.state.current_request.from, 
-          size: context.state.current_request.size,
-          _source: context.state.current_request.source,
-          query: context.state.current_request.query,
-          highlight: context.state.current_request.highlight,
-          sort: context.state.current_request.sort,
-          aggs: context.state.current_request.aggs
+          from: context.state.cr_from, 
+          size: context.state.cr_size,
+          _source: context.state.cr_source,
+          query: context.state.cr_query,
+          highlight: context.state.cr_highlight,
+          sort: context.state.cr_sort,
+          aggs: context.state.cr_aggs
         }
       }).then(function (es_response) {
         console.log("Finished loading query");

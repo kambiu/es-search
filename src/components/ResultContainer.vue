@@ -16,14 +16,6 @@
       </b-col>
       <b-col sm="3" id="right-panel">
         <ResultRightPanel />
-        <!--
-        <ResultRightPanel 
-          @action="rightPanelAction($event)"
-          :searchHistory="searchHistory"
-          :aggregations="searchResults.aggregations"
-          :resultFiltered="resultFiltered"
-        />
-        -->
       </b-col>
     </b-row>
     <button class="hidden" v-on:click="debug">Debug</button>
@@ -33,8 +25,7 @@
         :limit="10" 
         :number-of-pages="numPage" 
         v-show="searchResults.hits.total != 0"
-        v-model="field_current_page" 
-        v-on:input="pageSearch(field_current_page)" 
+        v-model="current_page" 
         :next-text="labels.result.pagination.next_page" />
     </b-row>
   </div>
@@ -50,7 +41,7 @@ export default {
   name: 'ResultContainer',
   data() {
     return {
-      field_current_page: this.current_page,      
+      m_current_page: this.current_page,
       result_sort_by: "_score"
     }
   },
@@ -80,8 +71,16 @@ export default {
     page_size() {
       return this.$store.getters.page_size;
     },
-    current_page() {
-      return this.$store.getters.current_page;
+    //TODO problem getting updated value from vuex
+    current_page: {
+      get() {
+        return this.$store.getters.current_page;
+      },
+      set(page) {
+        console.log("current_page setter is called " + page);
+        this.$store.dispatch("changePage", page);
+      }
+      
     }
   },
   props: [
@@ -94,15 +93,16 @@ export default {
   },
   methods: {
     debug: function(){
-      // console.log(this.result_sort_by);
+      console.log("current_page: " + this.current_page);
+      console.log("page_size: " + this.page_size);
     },
     pageSearch: function(page) {
+      console.log("pageSearch with page " + page);
       this.$store.dispatch("changePage", page);
     },
     changeSorting: function(sort_method) {
       this.field_current_page = 1;
       this.$store.dispatch("changeSorting", sort_method);
-
     },
     rightPanelAction: function(event) {
       this.$emit("action", event);

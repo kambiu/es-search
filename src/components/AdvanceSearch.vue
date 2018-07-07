@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import ns from '../utils/NameSpace.js'
+import SearchUtils from '../utils/SearchUtils' 
 
 export default {
   name: 'AdvanceSearch',
@@ -182,13 +182,17 @@ export default {
   methods: {
     onSubmit(evt) {
       evt.preventDefault();
-      console.log( this.request)
-      // if (this.request)
-      //   return;
-      // this.$emit("action", this.request);
-      // var isValid = this.advancedSearchValidation();
-      if (this.advancedSearchValidation())
-        this.$emit("action", {action: ns.advancedAction.search, query: this.request});
+      if (this.advancedSearchValidation()) {
+        var payload = {};
+        payload.query = SearchUtils.getAdvancedSearchQuery(this.request);
+        payload.aggs = SearchUtils.getAggregations(this.request);
+        payload.index = "*";
+        payload.size = this.request.max_results;
+            
+        this.$store.dispatch("doAdvancedSearch", payload);
+      
+        // this.$emit("action", {action: ns.advancedAction.search, query: this.request});
+      }
     },
     onReset(evt){
         evt.preventDefault();
@@ -234,13 +238,14 @@ export default {
         // reset error message
         this.err_message = ""
         this.err_fields.texts = false;
-        console.log("advancedSearchValidation return true");
+        console.log("advancedSearchValidation passed");
         return true;
       }
       console.log("advancedSearchValidation return false");
       // highlight textbox
       this.err_message = "Please enter some texts."
       this.err_fields.texts = true;
+      console.log("advancedSearchValidation failed");
       return false;
     }
   }
