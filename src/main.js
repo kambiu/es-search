@@ -12,9 +12,13 @@ import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+// element-ui
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 
-Vue.use(VueCookies)
-Vue.use(BootstrapVue)
+Vue.use(VueCookies);
+Vue.use(ElementUI);
+Vue.use(BootstrapVue);
 
 Vue.config.productionTip = false
 

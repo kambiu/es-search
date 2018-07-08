@@ -10,6 +10,7 @@
   "dependencies": {
     "bootstrap-vue": "^2.0.0-rc.2",
     "elasticsearch": "^15.0.0",
+    "element-ui": "^2.4.3",
     "log4js": "^2.9.0",
     "vue": "^2.5.13",
     "vue-cookies": "^1.5.6",

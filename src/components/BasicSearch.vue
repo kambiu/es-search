@@ -1,47 +1,33 @@
 <template>
-  <div class="basic-search-container">    
-    <b-row>
-      <b-input-group size="lg">
-        <b-form-input id="input_text" :class="class_text" v-model="request.text" 
-            autocomplete="off" :placeholder="labels.common.hints" size="lg" required />
-        <b-input-group-append>
+  <div class="basic-search-container">
+    <!-- basic search input box  -->
+    <el-row :gutter="20">
+      <el-input size="large" :class="class_text" :placeholder="labels.common.hints"
+                v-model="request.text" @keyup.enter.native="onSubmit"
+                style="border-color: red">
+        <i slot="suffix" class="el-input__icon el-icon-search" @click="onSubmit"></i>
+      </el-input>
+    </el-row>
 
-          <b-btn v-on:click="onSubmit" class="transparent">
-            <img src="../assets/images/search.png" alt="search" height="32" width="32" />
-          </b-btn>
-
-        </b-input-group-append>
-      </b-input-group>
-    </b-row>
-
-    <b-row id="search_options" align-h="between">
-      <b-col>
-        {{ labels.basic.trend }}
-        <a class="trend" href="#" v-for="item in trends" :key="item" v-on:click="onSubmit(item)" >{{ item }}</a>
-      </b-col>
-      <b-col>
+     <!-- Trends & advanced button  -->
+    <el-row :gutter="20">
+      <el-col :xs="14" :sm="20">
+        <el-col :xs="8" :sm="6">{{ labels.basic.trend }}</el-col>
+        <el-col :xs="16" :sm="18">
+          <a class="trend" href="#" v-for="item in trends" :key="item" v-on:click="onSubmit(item)" >{{ item }}</a>
+        </el-col>
+      </el-col>
+      <el-col :xs="10" :sm="4">
         <div id="opt_adv_search"><a href="#" v-on:click="onAdvacnedOption()">{{ labels.basic.more_option }}</a></div>
-      </b-col>
-      
-    </b-row>
-    <b-row>
-      <b-alert show variant="danger" :class="class_alert" style="width: 100%; margin:10px;" dismissible>
-        <span v-html="err_message" />
-      </b-alert>
-    </b-row>
+      </el-col>
+    </el-row>
 
-    <!-- 
-    <b-navbar toggleable="md" variant="light">
-      <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
-      <b-navbar-brand href="#">Trending Now</b-navbar-brand>
-      <b-collapse is-nav id="nav_collapse">
-        <b-navbar-nav>
-          <b-nav-item href="#" v-for="item in trends" :key="item">{{item}}</b-nav-item>
-        </b-navbar-nav>
-      </b-collapse>
-    </b-navbar>   
-    --> 
+    <!-- alert  -->
+    <el-row :gutter="20">
+      <el-alert :class="class_alert" :title="err_message" type="error" center show-icon></el-alert>
+    </el-row>
 
+  
   </div>
  
 </template>
@@ -84,6 +70,9 @@ export default {
     }
   },
   methods: {
+    debug: function() {
+      console.log("Debug message ...");
+    },
     onSubmit: function(submit_text) {
       if (typeof submit_text === 'string' || submit_text instanceof String){
         this.request.text = submit_text;
@@ -141,7 +130,7 @@ export default {
   margin-top: 10px;
 }
 .trend{
-  margin-left: 20px;
+  margin-right: 30px;
 }
 
 #search_options {
