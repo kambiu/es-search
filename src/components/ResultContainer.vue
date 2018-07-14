@@ -1,33 +1,52 @@
 <template>
   <div>
-    <b-row>
-      <b-col sm="9" id="main">
-        <b-row>
-          <b-col class="response-info">
+    <el-row>
+      <!-- left side -->
+      <el-col :xs="18" :sm="18">
+        <!-- reponseinfo & sorting -->
+        <el-row>
+          <!-- reponseinfo -->
+          <el-col :xs="12" :sm="12">
             <ResponseInfo />
-          </b-col>
-          <b-col>
-            <b-form-group horizontal :label="labels.result.sort_by.label" label-class="text-md-left" label-for="num_results">
-              <b-form-select v-model="result_sort_by" :options="sortby_options" @input="changeSorting(result_sort_by)"  />
-            </b-form-group>
-          </b-col>
-        </b-row>        
-        <ResultNormal v-for="item in list_result" :result="item" :key="item._id" />
-      </b-col>
-      <b-col sm="3" id="right-panel">
+          </el-col>
+          <!-- sorting -->
+          <el-col :xs="12" :sm="12">
+            <span>{{labels.result.sort_by.label}}</span>&nbsp;&nbsp;
+            <el-select v-model="result_sort_by" @change="changeSorting(result_sort_by)">
+              <el-option
+                v-for="item in sortby_options"
+                :key="item.value"
+                :label="item.text"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-col>
+          
+        </el-row>
+
+        <!-- search results -->
+        <el-row>
+          <ResultNormal v-for="item in list_result" :result="item" :key="item._id" />
+        </el-row>
+
+        <!-- pagination-->
+        <el-row>
+          <el-pagination
+            :current-page.sync="current_page"
+            layout="prev, pager, next"
+            :total="searchResults.hits.total"
+            v-show="searchResults.hits.total != 0"
+            @current-change="pageSearch(current_page)">
+          </el-pagination>
+        </el-row>  
+      </el-col>
+
+      <!-- right side filtering -->
+      <el-col :xs="6" :sm="6">
         <ResultRightPanel />
-      </b-col>
-    </b-row>
-    <button class="hidden" v-on:click="debug">Debug</button>
-    <b-row align-h="center" id="pageNavigation">
-      <b-pagination-nav 
-        base-url="#" 
-        :limit="10" 
-        :number-of-pages="numPage" 
-        v-show="searchResults.hits.total != 0"
-        v-model="current_page" 
-        :next-text="labels.result.pagination.next_page" />
-    </b-row>
+      </el-col>
+    </el-row>
+
   </div>
 </template>
 
@@ -41,7 +60,6 @@ export default {
   name: 'ResultContainer',
   data() {
     return {
-      m_current_page: this.current_page,
       result_sort_by: "_score"
     }
   },

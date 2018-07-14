@@ -89,15 +89,15 @@ const func = {
       )
     }
 
-    // date
+    // date , need to convert date to another date format
 
     if (adv_request.date.from && adv_request.date.to) {
       ret_query.bool.must.push(
         {
           range: { 
             date_modified: {
-              gte: adv_request.date.from + " 00:00:00",
-              lte: adv_request.date.to + " 00:00:00"
+              gte: adv_request.date.from.toISOString().substring(0, 10) + " 00:00:00",
+              lte: adv_request.date.to.toISOString().substring(0, 10) + " 00:00:00"
             }
           }
         }
@@ -106,7 +106,7 @@ const func = {
       ret_query.bool.must.push(
         {
           range: { 
-            date_modified: { gte: adv_request.date.from + " 00:00:00" }
+            date_modified: { gte: adv_request.date.from.toISOString().substring(0, 10) + " 00:00:00" }
           }
         }
       )
@@ -114,7 +114,7 @@ const func = {
       ret_query.bool.must.push(
         {
           range: { 
-            date_modified: { lte: adv_request.date.to + " 00:00:00" }
+            date_modified: { lte: adv_request.date.to.toISOString().substring(0, 10) + " 00:00:00" }
           }
         }
       )

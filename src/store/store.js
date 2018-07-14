@@ -18,12 +18,7 @@ export const store = new Vuex.Store({
       "Cras justo odio", "Dapibus ac facilisis in", "Morbi leo risus", "Porta ac consectetur ac", "Vestibulum at eros"
     ],
     es_response: null,
-    err: {
-      fields: {
-        texts: false
-      },
-      message: ""
-    },
+
     // current_request: flatten structure
     cr_from: 0,
     cr_size: 10,

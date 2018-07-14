@@ -1,109 +1,110 @@
 <template>
   <div class="advanced-search-container">
-    <b-row>
-      <b-alert show variant="danger" :class="class_alert" style="width: 100%; margin:10px;" dismissible>
-        <span v-html="err_message" />
-      </b-alert>
-    </b-row>
-    <b-form @submit="onSubmit" @reset="onReset">
-      <b-row id="adv_search_param">
-        <b-col md="8">
-          <b-row align-h="start" class="form-control-btn">
-            <b-col>        
-              <b-button type="submit" variant="success">{{ labels.advanced.submit }}</b-button>
-              &nbsp;
-              <b-button type="reset">{{ labels.advanced.reset }}</b-button>
-            </b-col>
-          </b-row>
 
-          <b-form-group horizontal
-                  :label="labels.advanced.text_or" label-class="text-md" label-for="input_text_or">
-            <b-form-input id="input_text_or" :class="class_texts" autocomplete="off"
-                v-model="request.text_or" :placeholder="labels.common.hints" size="md" />
-          </b-form-group>
+    <!-- alert -->
+    <el-row :gutter="50" id="grp_alert_message">
+      <el-alert :title="err_message" type="error" v-if="err_message.length > 0"></el-alert>
+    </el-row>
 
-          <b-form-group horizontal
-                  :label="labels.advanced.text_and" label-class="text-md" label-for="input_text_and">
-            <b-form-input id="input_text_and" :class="class_texts" autocomplete="off"
-                v-model="request.text_and" :placeholder="labels.common.hints" size="md" />
-          </b-form-group>
+    <!-- form -->
+    <el-row :gutter="50" id="grp_form">
+      <el-form ref="form" :model="request" label-width="150px">
 
-          <b-form-group horizontal :label="labels.advanced.text_exact" label-class="text-md" label-for="input_text_exact">
-            <b-form-input id="input_text_exact" :class="class_texts" autocomplete="off" 
-                v-model="request.text_exact" :placeholder="labels.common.hints" size="md" />
-          </b-form-group>
+        <!-- boolean operator text input -->
+        <el-form-item :label="labels.advanced.text_or">
+          <el-input v-model="request.text_or" :placeholder="labels.common.hints"></el-input>
+        </el-form-item>
+        <el-form-item :label="labels.advanced.text_and">
+          <el-input v-model="request.text_and" :placeholder="labels.common.hints"></el-input>
+        </el-form-item>
+        <el-form-item :label="labels.advanced.text_exact">
+          <el-input v-model="request.text_exact" :placeholder="labels.common.hints"></el-input>
+        </el-form-item>
+        <el-form-item :label="labels.advanced.text_not">
+          <el-input v-model="request.text_not" :placeholder="labels.common.hints"></el-input>
+        </el-form-item>
 
-          <b-form-group horizontal
-                  :label="labels.advanced.text_not" label-class="text-md" label-for="input_text_not">
-            <b-form-input id="input_text_not" autocomplete="off" 
-                  v-model="request.text_not"  :placeholder="labels.common.hints" size="md" />
-          </b-form-group>
+        <!-- date -->
+        <el-form-item :label="labels.advanced.date.label" >
+          <el-row>
+            <el-col :span="11" >
+              <el-form-item prop="date1">
+                <el-date-picker type="date" placeholder="Pick a date" v-model="request.date.from" style="width: 100%;"></el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col class="line" :span="2" style="text-align: center">-</el-col>
+            <el-col :span="11">
+              <el-form-item prop="date2">
+                <el-date-picker type="date" placeholder="Pick a date" v-model="request.date.to"  style="width: 100%;"></el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form-item>
 
-          <b-form-group horizontal :label="labels.advanced.date.label" label-class="text-md" label-for="input_date">
-            <b-row id="input_date">
-              <b-col md="1">
-                <span>{{ labels.advanced.date.from }}</span>
-              </b-col>
-              <b-col md="5">
-                <b-form-input id="input_date_from" class="el_form_input" autocomplete="off" type="date" size="md"
-                    v-model="request.date.from"  />
-              </b-col>
-              <b-col md="1">
-                <span>{{ labels.advanced.date.to }}</span>
-              </b-col>
-              <b-col md="5">
-                <b-form-input id="input_date_to" class="el_form_input" autocomplete="off" type="date" size="md"
-                    v-model="request.date.to"  />
-              </b-col>
-            </b-row>             
-          </b-form-group>
+        <!-- result per page -->
+        <el-form-item :label="labels.advanced.result_per_page">
+          <el-select v-model="request.max_results" placeholder="please select your zone" style="width: 100%">
+            <el-option label="10" value="10"></el-option>
+            <el-option label="20" value="20"></el-option>
+            <el-option label="50" value="50"></el-option>
+          </el-select>
+        </el-form-item>
 
-          <b-form-group horizontal :label="labels.advanced.result_per_page" label-class="text-md-left" label-for="num_results">
-              <b-form-select id="num_results" v-model="request.max_results" :options="[10,20,50]"  />
-          </b-form-group>
+         <!-- file type -->
+        <el-form-item :label="labels.advanced.file_type.label">
+          <el-select v-model="request.file_type" placeholder="Please select a file format" style="width: 100%" disabled>
+            <el-option 
+              v-for="item in file_type_options"
+              :key="item.value"
+              :label="item.text"
+              :value="item.value" >
+            </el-option>
+          </el-select>
+        </el-form-item>
 
-          <b-form-group horizontal :label="labels.advanced.file_type.label" label-class="text-md-left">
-              <b-form-select v-model="request.file_type" :options="file_type_options"  disabled/>
-          </b-form-group>
+        <!-- file size -->
+        <el-form-item :label="labels.advanced.file_size.label">
+          <el-input placeholder="" v-model="request.file_size.greater_than" disabled>
+            <template slot="prepend">{{labels.advanced.file_size.greater_than}}</template>
+            <template slot="append">
+             <el-select v-model="request.file_size.gt_category" style="width: 80px">
+              <el-option label="KB" value="KB"></el-option>
+              <el-option label="MB" value="MB"></el-option>
+             </el-select>
+            </template>
 
-          <b-form-group horizontal :label="labels.advanced.file_size.label" label-class="text-md-left">
-                <b-input-group :prepend="labels.advanced.file_size.greater_kb" class="file_size_grp_magrin">
-                  <b-form-input autocomplete="off" v-model="request.file_size.greater_than" disabled></b-form-input>
-                  <b-input-group-append>
-                    <b-btn id="gt_kb" variant="outline-success" v-on:click="change_file_size">KB</b-btn>
-                    <b-btn id="gt_mb" variant="outline-info" v-on:click="change_file_size">MB</b-btn>
-                  </b-input-group-append>
-                </b-input-group>
+          </el-input>
+          <el-input placeholder="" v-model="request.file_size.less_than" disabled>
+            <template slot="prepend">{{labels.advanced.file_size.less_than}}</template>
+            <template slot="append">
+              <el-select v-model="request.file_size.gt_category" style="width: 80px">
+              <el-option label="KB" value="KB"></el-option>
+              <el-option label="MB" value="MB"></el-option>
+             </el-select>
+            </template>
+          </el-input>
+        </el-form-item>
 
-                <b-input-group :prepend="labels.advanced.file_size.less_kb" class="file_size_grp_magrin">
-                  <b-form-input autocomplete="off" v-model="request.file_size.less_than"  disabled></b-form-input>
-                  <b-input-group-append>
-                    <b-btn id="lt_kb" variant="outline-success" v-on:click="change_file_size">KB</b-btn>
-                    <b-btn id="lt_mb" variant="outline-info" v-on:click="change_file_size">MB</b-btn>
-                  </b-input-group-append>
-                </b-input-group>
-          </b-form-group>
+        <!-- search scope -->
+        <el-form-item :label="labels.advanced.scope.label">
+          <el-radio-group v-model="request.scope" disabled>
+            <el-radio-button 
+              v-for="item in scope_options"
+              :label="item.text"
+              :key="item.value"
+              :value="item.value">
+            </el-radio-button>
+          </el-radio-group>
+        </el-form-item>
 
-          <b-form-group horizontal :label="labels.advanced.scope.label" label-class="text-md-left">
-              <b-form-radio-group buttons v-model="request.scope" class="pt-2" :options="scope_options" disabled/>
-          </b-form-group>
+        <!-- submit and reset form -->
+        <el-form-item>
+          <el-button type="primary" @click="onSubmit">{{ labels.advanced.submit }}</el-button>
+          <el-button @click="onReset">{{ labels.advanced.reset }}</el-button>
+        </el-form-item>
+      </el-form>
+    </el-row>
 
-          
-          <!--
-          <b-row align-h="start">
-            <b-col>        
-              <b-button type="submit" variant="success">Submit</b-button>
-              &nbsp;
-              <b-button type="reset">Reset</b-button>
-            </b-col>
-          </b-row>
-          -->
-
-        </b-col>  
-      </b-row>
-
-    </b-form>  
-    
   </div>
 </template>
 
@@ -135,8 +136,10 @@ export default {
         file_size: {
           greater_than: null,
           less_than: null,
-          // gt_text: this.labels.advanced.file_size.greater_kb,
-          // lt_text: this.labels.advanced.file_size.less_kb
+          gt_text: "Greater than (KB)",
+          lt_text: "Less than (KB)",
+          gt_category: "KB",
+          lt_category: "KB"
         },
         // other filters
         repository: ["cake", "staff", "student"]
@@ -167,17 +170,7 @@ export default {
         { text: this.labels.advanced.scope.content, value: 'content' },
         { text: this.labels.advanced.scope.meta, value: 'meta' }
       ]
-    },
-    class_texts: function() {
-      return {
-        hasError: this.err_fields.texts
-      }      
-    },
-    class_alert: function() {
-      return {
-        hidden: this.err_message == 0
-      }      
-    },
+    }
   },
   methods: {
     onSubmit(evt) {
@@ -214,21 +207,6 @@ export default {
       // this.$emit("action", "adv");
       // this.$emit("action", {action: ns.advancedAction.search});
     },
-    change_file_size: function (evt){
-      if (evt.target.id == "gt_kb"){
-        this.request.file_size.gt_text = this.labels.advanced.file_size.greater_kb;
-      }
-      else if (evt.target.id == "gt_mb"){
-        this.request.file_size.gt_text = this.labels.advanced.file_size.greater_mb;
-      }
-      else if (evt.target.id == "lt_kb"){
-        this.request.file_size.lt_text = this.labels.advanced.file_size.less_kb;
-      }
-      else if (evt.target.id == "lt_mb"){
-        this.request.file_size.lt_text = this.labels.advanced.file_size.less_mb;
-      }
-      
-    },
     advancedSearchValidation: function() {
       // check textbox
       if ( (this.request.text_or && this.request.text_or.trim().length > 0)
@@ -255,25 +233,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-.advanced-search-container {
-  margin: 20px;
-}
-
-#adv_search_param {
-  margin-top: 50px;
-}
-
-.input_controls {
-  margin-top: 10px;
-}
-
-.form-control-btn{
+#grp_form, #grp_alert_message {
   margin-top: 20px;
-  margin-bottom: 20px;
 }
 
-.file_size_grp_magrin{
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
 </style>

@@ -23,7 +23,7 @@
     },
     "result_per_page": "Results per page:",
     "file_type": {
-      "label": "(no relevant data) File type:",
+      "label": "(N/A) File type:",
       "all": "All file types",
       "txt": "Plain Text (.txt)",
       "pdf": "PDF (.pdf)",
@@ -31,14 +31,12 @@
       "img": "Images (.png/.jpg ...)"
     },
     "file_size": {
-      "label": "(no relevant data) File siez:",
-      "greater_kb": "Greater than (KB)",
-      "less_kb": "Less than (KB)",
-      "greater_mb": "Greater than (MB)",
-      "less_mb": "Less than (MB)"
+      "label": "(N/A) File size:",
+      "greater_than": "Greater than",
+      "less_than": "Less than"
     },
     "scope": {
-      "label": "(no relevant data) Search scope::",
+      "label": "(N/A) Search scope:",
       "all": "Anywhere",
       "content": "Content only",
       "meta": "Metadata only"

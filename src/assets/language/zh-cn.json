@@ -32,10 +32,8 @@
     },
     "file_size": {
       "label": "(不适用) 文件大小:",
-      "greater_kb": "大於 (KB)",
-      "less_kb": "小於 (KB)",
-      "greater_mb": "大於 (MB)",
-      "less_mb": "小於 (MB)"
+      "greater_than": "大於",
+      "less_than": "小於"
     },
     "scope": {
       "label": "(不适用) 搜索範围:",

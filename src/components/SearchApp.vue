@@ -1,30 +1,34 @@
 <template>
   <div class="search-container">
     <button v-on:click="debug" hidden>Debug</button>
-    <b-container fluid>
-      <b-row align-h="center">
-        <b-col md="4">
-          <b-form-group horizontal
-                  :label="labels.common.language" label-class="text-sm" label-for="display_language">
-            <b-form-select id="display_language" v-model="lang" :options="option_lang" @input="changeLanguage()"></b-form-select>
-          </b-form-group>       
-
-        </b-col>
-      </b-row>
-      <b-row align-h="center" align-v="center" class="search_input">
-        <b-col md="10">
-          <AdvanceSearch v-if="layout.show_advanced_search_page" @action="advancedAction($event)" />
-          <BasicSearch v-if="layout.show_basic_search_page" />          
-        </b-col>
-      </b-row>
-      <transition name="fade">
-        <b-row align-h="center" align-v="center" class="search_result" v-if="layout.show_result_page">
-          <b-col md="10">
-            <ResultContainer  />
-          </b-col>
-        </b-row>
-      </transition>
-    </b-container>
+    <el-container>
+      <el-header>
+        <el-row type="flex" justify="center">
+          <span>{{labels.common.language}}</span>&nbsp;&nbsp;
+          <el-select v-model="lang" @change="changeLanguage()">            
+            <el-option
+              v-for="item in option_lang"
+              :key="item.value"
+              :label="item.text"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-row>
+      </el-header>
+      <el-main>
+        <el-row type="flex" justify="center">
+          <el-col :xs="23" :sm="20">
+            <AdvanceSearch v-if="layout.show_advanced_search_page" @action="advancedAction($event)" />
+            <BasicSearch v-if="layout.show_basic_search_page" />
+            <el-collapse-transition>
+              <div v-if="layout.show_result_page">
+                <ResultContainer  />
+              </div>
+            </el-collapse-transition>
+          </el-col>
+        </el-row>
+      </el-main>
+    </el-container>
   </div>
 </template>
 
@@ -133,5 +137,9 @@ strong, em{
 .hasError {
   border-color: red;
   border-width: 2px;
+}
+
+.el-row {
+  margin-top: 20px;
 }
 </style>
