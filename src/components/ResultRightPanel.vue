@@ -1,6 +1,16 @@
 <template>
   <div>
+
     <!-- aggs term -->
+    <FilterTree v-for="(item, index) in arr_terms_filter"
+      :key="'term_' + index" :tree="item"  
+      />
+
+    <!-- aggs range -->
+    <FilterTree v-for="(item, index) in arr_ranges_filter"
+      :key="'range_' + index" :tree="item"  
+      />
+
     <button class="hidden" v-on:click="debug">Debug</button>
     <div v-for="(item, index) in arr_terms_filter" :key="'term_' + index"> 
       <div>{{ item.display_name }}</div>
@@ -44,10 +54,13 @@
 <script>
 
 import SearchUtils from '../utils/SearchUtils'
-
+import FilterTree from './FilterTree'
 
 export default {
   name: 'ResultRightPanel',
+  components: {
+    FilterTree
+  },
   data() {
     return {
       isFiltered: false
@@ -99,10 +112,11 @@ export default {
           new_obj["values"] = {}
           for (let range of this.aggregations[key].buckets) {
             if (range.doc_count > 0) {
-              new_obj["values"][range.key] = {};
-              new_obj["values"][range.key].from = range.from;
-              new_obj["values"][range.key].to = range.to;
-              new_obj["values"][range.key].doc_count = range.doc_count;
+              new_obj["values"][range.key] = range.doc_count;
+              // new_obj["values"][range.key] = {};
+              // new_obj["values"][range.key].from = range.from;
+              // new_obj["values"][range.key].to = range.to;
+              // new_obj["values"][range.key].doc_count = range.doc_count;
             }
           }
           arr_ranges.push(new_obj);
@@ -111,9 +125,6 @@ export default {
 
       return arr_ranges;
     }
-  }, 
-  components: {
-
   },
   methods: {
     debug(){
