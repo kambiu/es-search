@@ -5,7 +5,8 @@ const func = {
     var a = appcfg.elasticsearch;
     console.log(a);
     return "hello";
-  },
+  }
+  ,
   getBasicSearchQuery(text) {
     return {
       bool: {
@@ -21,7 +22,8 @@ const func = {
         filter: []
       }
     }
-  },
+  }
+  ,
   getAggregations() {    
     var aggs = {}
 
@@ -41,7 +43,8 @@ const func = {
       }
     }
     return aggs;
-  },
+  }
+  ,
   getAdvancedSearchQuery(adv_request) {
     
     var ret_query  = {
@@ -122,7 +125,71 @@ const func = {
 
     return ret_query;
   } // end parse advanced search query
+  ,
+  aggs2TreeData(aggregations) {
+    var arr_tree = []; //complete tree
 
+    // loop fields
+    for (var key in aggregations) {
+      var new_tree = {}; // tree for a signle field
+      new_tree.aggs_type = key.split("_")[0];
+      new_tree.field_name = key.split("_")[1];
+      new_tree.buckets = []
+      // loop the buckets of this field
+      for (let bucket of aggregations[key].buckets) {
+        //only show filter where count > 1
+        if (appcfg.search.aggregation.show_empty_bucket == false) {
+          if (parseInt(bucket.doc_count) == 0)
+            continue;
+        }
+        var tree_bucket = {
+          key: bucket.key,
+          count: bucket.doc_count
+        }
+        if (new_tree.aggs_type == "terms") {
+          // nth here else
+        } else if (new_tree.aggs_type == "ranges") {
+          tree_bucket.from = bucket.from;
+          tree_bucket.to = bucket.to;
+        }        
+        new_tree.buckets.push(tree_bucket);
+      } // end loop bucket of a field tree
+
+      /* add a field tree to complete tree */
+      arr_tree.push(new_tree);
+
+    }
+    return arr_tree;
+  }
+  ,
+  getTreeNodeData(field_name, aggs_type, bucket) {
+    var ret_label = { 
+      label: bucket.key + " (" + bucket.count + ")",
+      filter_param: {}
+    }
+
+    /* terms filter */
+    if (aggs_type == "terms") { 
+      ret_label.filter_param.term = {}
+      ret_label.filter_param.term[field_name] = bucket.key
+
+    /* ranges filter */
+    } else if (aggs_type == "ranges"){
+      /* includes terms */
+      ret_label.filter_param.range = {}
+      ret_label.filter_param.range[field_name] = {}
+      if (bucket.from) {
+        ret_label.filter_param.range[field_name].gte = bucket.from;
+      }
+      if (bucket.to) {
+        ret_label.filter_param.range[field_name].lt = bucket.to;
+      }
+    /* other filter */
+    } else {
+      ret_label.filter_param = null
+    }
+    return ret_label;
+  }
 };
 
 export default func;

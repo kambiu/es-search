@@ -50,6 +50,9 @@ export const store = new Vuex.Store({
       var size = parseInt(state.cr_size);
       var page = (from / size) + 1;
       return page;
+    },
+    filter_length: state=>{
+      return state.cr_query.bool.filter.length;
     }
   },
   mutations: {
@@ -147,24 +150,6 @@ export const store = new Vuex.Store({
     },
     updateSearchHistory: function(context, new_text) {
       console.log("context.state.list_search_history: " + context.state.list_search_history);
-      // console.log("searchType in updateSearchHistory(): " + searchType)
-      // var text_submitted = "";
-      // if (search_type == ns.searchType.basic)
-      //   text_submitted = context.basic_request.text;
-      // else if (searchType == ns.searchType.advanced)
-      //   if (context.advanced_request.text_or)
-      //     text_submitted += "+OR(" +context.advanced_request.text_or+ ")"
-      //   if (query.text_and)
-      //     text_submitted += "+AND(" +context.advanced_request.text_and+ ")"
-      //   if (query.text_exact)
-      //     text_submitted += "+EXACT(" +context.advanced_request.text_exact+ ")"
-      //   if (query.text_not)
-      //     text_submitted += "+NOT(" +context.advanced_request.text_not+ ")"
-
-      // console.log(text_submitted);
-      // //updat ehistory
-      // this.list_search_history.unshift(text_submitted);    
-      // this.list_search_history = this.list_search_history.slice(0, 5);
       var new_list = []
       for (var item_history of context.state.list_search_history) {
         new_list.push(item_history);

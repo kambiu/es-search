@@ -1,54 +1,29 @@
 <template>
   <div>
+    <!-- debug button  
+    <el-button @click="debug">DebugRightPanel</el-button> -->
+    
+    <!-- filter tree -->
+    <el-row>
+      <FilterTree :data="arr_tree_data" />
+    </el-row>
 
-    <!-- aggs term -->
-    <FilterTree v-for="(item, index) in arr_terms_filter"
-      :key="'term_' + index" :tree="item"  
-      />
+    <!-- clear filter button-->
+    <el-row>
+      <el-button v-if="filter_length > 0" @click="filterClear()" style="width: 100%">
+        {{ labels.result.clear_filter }}
+      </el-button>
+    </el-row>
 
-    <!-- aggs range -->
-    <FilterTree v-for="(item, index) in arr_ranges_filter"
-      :key="'range_' + index" :tree="item"  
-      />
+    <!-- hisotry button-->
+    <el-row>
+      <el-table :data="searchHistory" @cell-click="historySearch" border
+        style="width: 100%; cursor: pointer;">
+        <el-table-column prop="text" :label="labels.result.history" style="width: 100%"  ></el-table-column>
+      </el-table>
+    </el-row>
 
-    <button class="hidden" v-on:click="debug">Debug</button>
-    <div v-for="(item, index) in arr_terms_filter" :key="'term_' + index"> 
-      <div>{{ item.display_name }}</div>
-      <div>
-        <b-list-group class="listGrp">
-          <b-list-group-item v-for="(doc_count, field_value) in item.values" :key="field_value" v-on:click="filterSearchTerms(item.field_name, field_value)"
-          class="itemhover" href="#">{{ field_value + " (" + doc_count + ")"}}</b-list-group-item>
-        </b-list-group>
-      </div>
-      <br />
-    </div>
-
-    <!-- aggs term -->
-    <div v-for="(item, index) in arr_ranges_filter" :key="'range_' + index"> 
-      <div>{{ item.display_name }}</div>
-      <div>
-        <b-list-group class="listGrp">
-          <b-list-group-item v-for="(field_meta, field_value) in item.values" :key="field_value" v-on:click="filterSearchRanges(item.field_name, field_meta.from, field_meta.to)"
-          class="itemhover" href="#">{{ field_value + " (" + field_meta.doc_count + ")"}}</b-list-group-item>
-        </b-list-group>
-      </div>
-      <br />
-    </div>
-
-    <b-button style="width: 100%;" v-if="isFiltered" v-on:click="filterClear()">
-      {{ labels.result.clear_filter }}
-    </b-button>
-
-    <br /><br />
-    <div>{{ labels.result.history }}</div>
-    <div>
-      <b-list-group class="listGrp">
-        <b-list-group-item v-for="(item, index) in searchHistory" :key="index" v-on:click="historySearch(item)"
-        class="itemhover" href="#">{{item}}</b-list-group-item>
-      </b-list-group>
-    </div>
   </div>
-
 </template>
 
 <script>
@@ -63,7 +38,7 @@ export default {
   },
   data() {
     return {
-      isFiltered: false
+
     }
   },
   computed: {
@@ -71,100 +46,36 @@ export default {
       return this.$store.state.labels;
     },
     searchHistory() {
-      return this.$store.state.list_search_history;
+      var ret_history = [];
+      for (var idx in this.$store.state.list_search_history) {
+        var obj_history = { text: this.$store.state.list_search_history[idx] }
+        ret_history.push(obj_history)
+      }
+      return ret_history;
+      // return this.$store.state.list_search_history;
     },
-    isResultFiltered() {
-      return this.$store.getters.isResultFiltered;
+    filter_length() {
+      return this.$store.getters.filter_length;
     },
     aggregations() {
       return this.$store.getters.result_aggs;
     },
-    arr_terms_filter: function() {
-      var arr_terms = [];
-      for (var key in this.aggregations) { //term_active, term_grade
-        if (key.includes("terms_")) {
-          var new_obj = {}
-          var field_name = key.replace("terms_", "");
-          new_obj["field_name"] = field_name
-          //new_obj["display_name"] = ns.label.result.aggs.terms[field_name];
-          new_obj["display_name"] = this.labels.custom.filter[field_name];
-          new_obj["values"] = {}
-          for (let term of this.aggregations[key].buckets) {
-            if (parseInt(term.doc_count) > 0)
-              new_obj["values"][term.key] = term.doc_count;
-          }
-          arr_terms.push(new_obj);
-        }
-        // else it is for term aggreation string type
-      }
-    
-      return arr_terms;
-    },
-    arr_ranges_filter: function() {
-      var arr_ranges = []
-      for (var key in this.aggregations) {
-        if (key.includes("ranges_")) {
-          var new_obj = {}
-          var field_name = key.replace("ranges_", "");
-          new_obj["field_name"] = field_name
-          // new_obj["display_name"] = ns.label.result.aggs.range[field_name];
-          new_obj["display_name"] = this.labels.custom.filter[field_name];
-          new_obj["values"] = {}
-          for (let range of this.aggregations[key].buckets) {
-            if (range.doc_count > 0) {
-              new_obj["values"][range.key] = range.doc_count;
-              // new_obj["values"][range.key] = {};
-              // new_obj["values"][range.key].from = range.from;
-              // new_obj["values"][range.key].to = range.to;
-              // new_obj["values"][range.key].doc_count = range.doc_count;
-            }
-          }
-          arr_ranges.push(new_obj);
-        }
-      }
-
-      return arr_ranges;
+    arr_tree_data() {
+      return SearchUtils.aggs2TreeData(this.aggregations);
     }
   },
   methods: {
     debug(){
-      console.log("[debug] this.isFiltered " + this.isFiltered);
-
+      console.log("[debug] this.arr_tree_data " + JSON.stringify(this.arr_tree_data));
+      console.log("[debug] this.filter_length " + JSON.stringify(this.filter_length));
     },
-    historySearch: function(text) {
-      console.log("historySearch: " + text);
+    historySearch: function(data) {
+      console.log("historySearch: " + JSON.stringify(data));
       var payload = {}
-      payload.query = SearchUtils.getBasicSearchQuery(text);
+      payload.query = SearchUtils.getBasicSearchQuery(data.text);
       payload.aggs = SearchUtils.getAggregations();
-      this.isFiltered = false;
-      this.$store.dispatch("updateSearchHistory", text);
+      this.$store.dispatch("updateSearchHistory", data.text);
       this.$store.dispatch("doBasicSearch", payload);
-    },
-    filterSearchTerms: function(field_name, field_value) {
-      console.log("filterSearchTerms:", field_name, field_value);
-      var terms_filter = {
-        term: {}
-      }
-      terms_filter.term[field_name] = field_value
-      this.isFiltered = true;
-      this.$store.dispatch("addFilter", terms_filter);
-      // this.$emit("action", {action: ns.resultAction.filterSearch, filter: terms_filter});
-    },
-    filterSearchRanges: function(field_name, from, to) {
-      console.log("filterSearchRanges: ", field_name, from, to);
-      var ranges_filter = {
-        range: {}
-      }
-      ranges_filter.range[field_name] = {};
-      if (from) {
-        ranges_filter.range[field_name].gte = from;
-      }
-      if (to) {
-        ranges_filter.range[field_name].lt = to;
-      }
-      this.isFiltered = true;
-      this.$store.dispatch("addFilter", ranges_filter);
-      // this.$emit("action", {action: ns.resultAction.filterSearch, filter: ranges_filter});
     },
     filterClear: function() {
       this.isFiltered = false;
@@ -173,6 +84,7 @@ export default {
   },
   created() {
     console.log("RightPanel created ==>");
+    console.log("aggs: " + JSON.stringify(this.aggregations));
   }
 }
 

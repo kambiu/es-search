@@ -9,9 +9,12 @@ appcfg.search.index = ["*"]
 
 appcfg.search.aggregation = {};
 
-//active is bool instead of text
+appcfg.search.aggregation.show_empty_bucket = false;
+// labels are auto detect as result.custom.filter[<field_name>]
 appcfg.search.aggregation.terms_fields = ["grade"]
+//active is bool instead of text
 
+// labels are auto detect as result.custom.filter[<field_name>]
 appcfg.search.aggregation.range_fields = [
   {
     field_name: "age",

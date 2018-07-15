@@ -33,8 +33,6 @@
 </template>
 
 <script>
-// import ns from '../utils/NameSpace.js'
-//import appcfg from '../config.js'
 import SearchUtils from '../utils/SearchUtils'
 
 export default {

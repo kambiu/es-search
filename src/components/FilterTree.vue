@@ -1,60 +1,61 @@
 <template>
   <div>
-    <!--{{ tree }} -->
-    <el-tree :data="tree_data" @node-click="nodeClick" size="large" default-expand-all></el-tree>
-  <!--
-    <div v-for="(item, index) in arr_terms_filter" :key="'term_' + index"> 
-      <div>{{ item.display_name }}</div>
-      <div>
-        <b-list-group class="listGrp">
-          <b-list-group-item v-for="(doc_count, field_value) in item.values" :key="field_value" v-on:click="filterSearchTerms(item.field_name, field_value)"
-          class="itemhover" href="#">{{ field_value + " (" + doc_count + ")"}}</b-list-group-item>
-        </b-list-group>
-      </div>
-      <br /-->
-    </div>
+    <!-- debug button
+    <el-button @click="debug">debug</el-button> -->
+    <!-- tree -->
+    <el-tree :data="tree_data" @node-click="filterSearch" size="medium" default-expand-all></el-tree>
+  </div>
 </template>
 
 <script>
+
+import SearchUtils from '../utils/SearchUtils'
+
 export default {
   name: 'FilterTree',
   props: [
-    "tree"
+    "data"
   ],
   computed: {
     labels() {
       return this.$store.state.labels;
     },
     tree_data: function() {
-      var arr_tree = []
-      var tmp_obj = {}
-      tmp_obj.label = this.labels.custom.filter[this.tree.field_name]
-      tmp_obj.children = []
-      for (var key in this.tree.values) {
-        tmp_obj.children.push({label: key + " (" + this.tree.values[key] + ")"})
-      }
-
-      arr_tree.push(tmp_obj)
+      // root
+      var arr_tree = [];
+      var self = this;
+      this.data.forEach(function(field_tree) {
+        var sub_tree = {};
+        // level 1
+        // sub_tree.label = field_tree.field_name;
+        sub_tree.label = self.labels.custom.filter[field_tree.field_name];
+        // level 2
+        sub_tree.children = [];
+        field_tree.buckets.forEach(function(bucket) {
+          sub_tree.children.push(SearchUtils.getTreeNodeData(field_tree.field_name, field_tree.aggs_type, bucket));
+        });
+        arr_tree.push(sub_tree)
+      });
       return arr_tree;
     }
   },
   methods: {
     debug(){
-      console.log("[debug] this.isFiltered " + this.test);
+      // console.log("[debug] this.tree_data " + JSON.stringify(this.tree_data));
 
     },
-    nodeClick(data){
-      console.log("[nodeClick] with node: " + data);
-    }
+    filterSearch: function(node_data) {
+      if (node_data.filter_param) {
+        console.log("filterSearchTerms: " + JSON.stringify(node_data.filter_param));
+        this.isFiltered = true; //TODO
+        this.$store.dispatch("addFilter", node_data.filter_param);
+      }
+    },
   },
   created() {
     console.log("FilterTable created ==>");
-    // console.log("Tree: " + JSON.stringify(this.tree));
-    // console.log("Tree.values: " + JSON.stringify(this.tree.values));
-
-    // for (var key in this.tree.values) {
-    //   console.log(key, this.tree.values[key]);
-    // }
+    console.log("FilterTable date ==>" +  JSON.stringify(this.data));
+    console.log("FilterTable tree_data ==>" +  JSON.stringify(this.tree_data));
   }
 }
 

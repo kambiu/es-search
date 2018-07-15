@@ -8,9 +8,9 @@ import {store} from './store/store'
 import VueCookies from 'vue-cookies'
 
 // bootstrap
-import BootstrapVue from 'bootstrap-vue'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+// import BootstrapVue from 'bootstrap-vue'
+// import 'bootstrap/dist/css/bootstrap.min.css'
+// import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 // element-ui
 import ElementUI from 'element-ui';
@@ -18,7 +18,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 
 Vue.use(VueCookies);
 Vue.use(ElementUI);
-Vue.use(BootstrapVue);
+// Vue.use(BootstrapVue);
 
 Vue.config.productionTip = false
 
