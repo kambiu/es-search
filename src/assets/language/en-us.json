@@ -60,6 +60,7 @@
   },
   "custom": {
     "filter": {
+      "header": "Filter",
       "grade": "Grade Filtering",
       "age": "Age Filtering",
       "price": "Price Filtering"

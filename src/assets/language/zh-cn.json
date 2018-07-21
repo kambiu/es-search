@@ -60,6 +60,7 @@
   },
   "custom": {
     "filter": {
+      "header": "筛选",
       "grade": "评级:",
       "age": "年龄:",
       "price": "价钱:"

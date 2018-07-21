@@ -2,15 +2,15 @@
   <div>
     <el-row>
       <!-- left side -->
-      <el-col :xs="18" :sm="18">
+      <el-col :xs="24" :sm="18">
         <!-- reponseinfo & sorting -->
         <el-row>
           <!-- reponseinfo -->
-          <el-col :xs="12" :sm="12">
+          <el-col :span="12">
             <ResponseInfo />
           </el-col>
           <!-- sorting -->
-          <el-col :xs="12" :sm="12">
+          <el-col :span="12" class="hidden-xs-only">
             <span>{{labels.result.sort_by.label}}</span>&nbsp;&nbsp;
             <el-select v-model="result_sort_by" @change="changeSorting(result_sort_by)">
               <el-option
@@ -22,6 +22,21 @@
             </el-select>
           </el-col>
           
+        </el-row>
+
+        <!-- sorting when small screen -->
+        <el-row class="hidden-sm-and-up" id="xs_sort">
+          <el-col>
+            <span>{{labels.result.sort_by.label}}</span>&nbsp;&nbsp;
+            <el-select v-model="result_sort_by" @change="changeSorting(result_sort_by)">
+              <el-option
+                v-for="item in sortby_options"
+                :key="item.value"
+                :label="item.text"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-col>
         </el-row>
 
         <!-- search results -->
@@ -42,10 +57,14 @@
       </el-col>
 
       <!-- right side filtering -->
-      <el-col :xs="6" :sm="6">
+      <el-col :span="6" class="hidden-xs-only">
         <ResultRightPanel />
       </el-col>
     </el-row>
+    <el-row class="hidden-sm-and-up">
+      <ResultRightPanel />
+    </el-row>
+
 
   </div>
 </template>
@@ -135,13 +154,14 @@ export default {
 
 <style scoped>
 
-#pageNavigation {
-  margin-top: 20px;
-}
-
 .response-info {
   margin-left: 8px;
   margin-top: 3px;
   margin-bottom: 10px;
+}
+
+#xs_sort {
+   margin-left: 10px;
+   margin-right: 10px;
 }
 </style>

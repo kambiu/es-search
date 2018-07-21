@@ -1,15 +1,17 @@
 <template>
   <div class="single-result">
-    <div><a v-bind:href="result._id" class="title">{{ result._id }}</a></div>
-    <div class="link">{{ result._id | build_link }}</div>
-    <div class="summary" v-html="joinHighlight(result.highlight.content)"></div>
-    <div class="meta">
-      <span>{{labels.custom.display_fields.date}} {{ result._source.date_modified }}</span>&nbsp;&nbsp;&nbsp;
-      <span>{{labels.custom.display_fields.active}} {{ result._source.active }}</span>&nbsp;&nbsp;&nbsp;
-      <span>{{labels.custom.display_fields.grade}} {{ result._source.grade }}</span>&nbsp;&nbsp;&nbsp;
-      <span>{{labels.custom.display_fields.age}} {{ result._source.age }}</span>&nbsp;&nbsp;&nbsp;
-      <span>{{labels.custom.display_fields.price}} {{ result._source.price }}</span>&nbsp;&nbsp;&nbsp;
-    </div>
+    <el-card class="box-card" shadow="hover">
+      <div><a v-bind:href="result._id" class="title">{{ result._id }}</a></div>
+      <div class="link">{{ result._id | build_link }}</div>
+      <div class="summary" v-html="joinHighlight(result.highlight.content)"></div>
+      <div class="meta">
+        <span>{{labels.custom.display_fields.date}} {{ result._source.date_modified }}</span>&nbsp;&nbsp;&nbsp;
+        <span>{{labels.custom.display_fields.active}} {{ result._source.active }}</span>&nbsp;&nbsp;&nbsp;
+        <span>{{labels.custom.display_fields.grade}} {{ result._source.grade }}</span>&nbsp;&nbsp;&nbsp;
+        <span>{{labels.custom.display_fields.age}} {{ result._source.age }}</span>&nbsp;&nbsp;&nbsp;
+        <span>{{labels.custom.display_fields.price}} {{ result._source.price }}</span>&nbsp;&nbsp;&nbsp;
+      </div>
+    </el-card>
     <!-- <div class="meta">Date: {{ result.date | unix2localtime }}</div>-->
   </div>
 </template>
@@ -46,14 +48,12 @@ export default {
 <style scoped>
 
 .title {
-  font-family: arial,sans-serif;
   font-size: 18px;
   color: #1a0dab;
   margin-bottom: 10px;
 }
 
 .link {
-  font-family: arial,sans-serif;
   font-size: 14px;
   color: #006621;
   margin-bottom: 5px;
@@ -61,20 +61,18 @@ export default {
 
 
 .summary {
-  font-family: arial,sans-serif;
   font-size: small;
   color: #545454;
   margin-bottom: 5px;
 }
 
 .meta {
-  font-family: arial,sans-serif;
   font-size: small;
   color: #1a0dab;
 }
 
 .single-result {
-  margin-top: 20px;
+  margin-top: 5px;
   margin-left: 10px;
   margin-right: 50px;
 

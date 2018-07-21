@@ -5,7 +5,13 @@
     
     <!-- filter tree -->
     <el-row>
+      <el-card>
+      <div slot="header" class="clearfix">
+        <span>{{ labels.custom.filter.header }}</span>
+
+      </div>
       <FilterTree :data="arr_tree_data" />
+      </el-card>
     </el-row>
 
     <!-- clear filter button-->
@@ -16,11 +22,14 @@
     </el-row>
 
     <!-- hisotry button-->
+    
     <el-row>
-      <el-table :data="searchHistory" @cell-click="historySearch" border
-        style="width: 100%; cursor: pointer;">
-        <el-table-column prop="text" :label="labels.result.history" style="width: 100%"  ></el-table-column>
-      </el-table>
+      <el-card>
+        <el-table :data="searchHistory" @cell-click="historySearch" border
+          style="width: 100%; cursor: pointer;">
+          <el-table-column prop="text" :label="labels.result.history" style="width: 100%"  ></el-table-column>
+        </el-table>
+      </el-card>
     </el-row>
 
   </div>
