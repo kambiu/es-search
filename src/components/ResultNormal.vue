@@ -45,27 +45,38 @@ export default {
 
 <style scoped>
 
-.link {
-  font-size: 14px;
-  color: #006621;
-}
-
 .title {
+  font-family: arial,sans-serif;
   font-size: 18px;
   color: #1a0dab;
+  margin-bottom: 10px;
 }
 
+.link {
+  font-family: arial,sans-serif;
+  font-size: 14px;
+  color: #006621;
+  margin-bottom: 5px;
+}
+
+
 .summary {
+  font-family: arial,sans-serif;
   font-size: small;
   color: #545454;
+  margin-bottom: 5px;
 }
 
 .meta {
+  font-family: arial,sans-serif;
   font-size: small;
   color: #1a0dab;
 }
 
 .single-result {
-  margin: 15px;
+  margin-top: 20px;
+  margin-left: 10px;
+  margin-right: 50px;
+
 }
 </style>

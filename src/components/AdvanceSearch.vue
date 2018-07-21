@@ -1,14 +1,15 @@
 <template>
   <div class="advanced-search-container">
 
+    <el-button @click="debug()" class="hidden">Debug</el-button>
     <!-- alert -->
-    <el-row :gutter="50" id="grp_alert_message">
+    <el-row id="grp_alert_message">
       <el-alert :title="err_message" type="error" v-if="err_message.length > 0"></el-alert>
     </el-row>
 
     <!-- form -->
-    <el-row :gutter="50" id="grp_form">
-      <el-form ref="form" :model="request" label-width="150px">
+    <el-row id="grp_form">
+      <el-form ref="form" :model="request" label-width="150px" :label-position="label_position">
 
         <!-- boolean operator text input -->
         <el-form-item :label="labels.advanced.text_or">
@@ -117,7 +118,7 @@ export default {
     msg: String
   },
   data() {
-    return {      
+    return {
       request: {
         // text
         text_or: null,
@@ -154,7 +155,12 @@ export default {
     labels() {
       return this.$store.state.labels;
     },
-
+    label_position(){
+      if (screen.width > 765)
+        return "right"
+      else
+        return "top"
+    },
     file_type_options() {
       return [
         { text: this.labels.advanced.file_type.all, value: 'all' },
@@ -173,6 +179,9 @@ export default {
     }
   },
   methods: {
+    debug: function() {
+      console.log("[AdvacnedSearch-Debug] " + screen.width)
+    },
     onSubmit(evt) {
       evt.preventDefault();
       if (this.advancedSearchValidation()) {

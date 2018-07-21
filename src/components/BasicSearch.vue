@@ -9,17 +9,26 @@
       </el-input>
     </el-row>
 
-     <!-- Trends & advanced button  -->
-    <el-row :gutter="20">
-      <el-col :xs="14" :sm="20">
-        <el-col :xs="8" :sm="6">{{ labels.basic.trend }}</el-col>
-        <el-col :xs="16" :sm="18">
-          <a class="trend" href="#" v-for="item in trends" :key="item" v-on:click="onSubmit(item)" >{{ item }}</a>
-        </el-col>
-      </el-col>
-      <el-col :xs="10" :sm="4">
-        <div id="opt_adv_search"><a href="#" v-on:click="onAdvacnedOption()">{{ labels.basic.more_option }}</a></div>
-      </el-col>
+    <!-- Trends & advanced button -->
+    <!-- sm -->
+    <el-row :gutter="80" class="hidden-sm-and-up">
+      <el-card class="box-card">
+        <div slot="header" class="clearfix">
+          <span>{{ labels.basic.trend }}</span>
+          <el-button style="float: right; padding: 3px 0" type="text" @click="onAdvacnedOption()"> {{ labels.basic.more_option }}</el-button>
+        </div>
+        <a v-for="item in trends" :key="item" class="trend" href="#" v-on:click="onSubmit(item)" >{{ item }}</a>
+      </el-card>
+    </el-row>
+    <!-- xs -->
+    <el-row class="hidden-xs-only">
+      <el-card class="box-card">
+        <div slot="header" class="clearfix">
+          <span>{{ labels.basic.trend }}</span>
+          <el-button style="float: right; padding: 3px 0" type="text" @click="onAdvacnedOption()"> {{ labels.basic.more_option }}</el-button>
+        </div>
+        <a v-for="item in trends" :key="item" class="trend" href="#" v-on:click="onSubmit(item)" >{{ item }}</a>
+      </el-card>
     </el-row>
 
     <!-- alert  -->
@@ -136,8 +145,12 @@ export default {
   margin-left: 0px;
 }
 
-#opt_adv_search {
+#opt_adv_search_sm {
   text-align: right;
+}
+
+a {
+  margin-top: 10px;
 }
 
 </style>
